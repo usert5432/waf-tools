@@ -18,7 +18,7 @@ import os.path as osp
 from waflib.Utils import to_list
 from waflib.Configure import conf
 import waflib.Context
-from waflib.Logs import debug, info, error
+from waflib.Logs import debug, info, error, warn
 
 _tooldir = osp.dirname(osp.abspath(__file__))
 
@@ -36,6 +36,9 @@ def configure(cfg):
     cfg.load('find_root', tooldir=_tooldir)
     cfg.load('find_eigen3', tooldir=_tooldir)
     cfg.load('boost', tooldir=_tooldir)
+
+    cfg.env.append_unique('CXXFLAGS',['--std=c++11'])
+
     pass
 
 def build(bld):
@@ -44,8 +47,10 @@ def build(bld):
 
 
 @conf
-def make_package(bld, name, use=''):
-    use = to_list(use) + ['ROOTSYS']
+def make_package(bld, name, use='', app_use='', test_use=''):
+    use = list(set(to_list(use)))
+    app_use = list(set(use + to_list(app_use)))
+    test_use = list(set(use + to_list(test_use)))
 
     includes = []
     headers = []
@@ -68,16 +73,22 @@ def make_package(bld, name, use=''):
     if srcdir:
         source += srcdir.ant_glob('*.cxx')
 
+    # root dictionary
     if dictdir:
         if not headers:
             error('No header files for ROOT dictionary "%s"' % name)
-        linkdef = dictdir.find_resource('LinkDef.h')
-        bld.gen_rootcling_dict(name, linkdef,
-                               headers = headers,
-                               includes = includes, 
-                               use = use)
-        source.append(name+'Dict.cxx')
+        print name,use
+        if 'ROOTSYS' in use:
+            linkdef = dictdir.find_resource('LinkDef.h')
+            bld.gen_rootcling_dict(name, linkdef,
+                                   headers = headers,
+                                   includes = includes, 
+                                   use = use)
+            source.append(bld.path.find_or_declare(name+'Dict.cxx'))
+        else:
+            warn('No ROOT dictionary will be generated for "%s" unless "ROOTSYS" added to "use"' % name)
 
+    # the library
     if incdir and srcdir:
         bld(features = 'cxx cxxshlib',
             name = name,
@@ -94,12 +105,12 @@ def make_package(bld, name, use=''):
                         target = test_main.name.replace('.cxx',''),
                         install_path = None,
                         includes = 'inc',
-                        use = use + [name])
+                        use = test_use + [name])
     if appsdir:
         for app in appsdir.ant_glob('*.cxx'):
             bld.program(source = [app], 
                         target = app.name.replace('.cxx',''),
                         includes = 'inc',
-                        use = use + [name])
+                        use = app_use + [name])
 
     
