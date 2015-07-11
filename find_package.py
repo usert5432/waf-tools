@@ -39,6 +39,7 @@ def configure(cfg):
 
     cfg.env.append_unique('CXXFLAGS',['--std=c++11'])
 
+    cfg.check_boost(lib='system filesystem graph')
     pass
 
 def build(bld):
