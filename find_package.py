@@ -60,6 +60,7 @@ def make_package(bld, name, use='', app_use='', test_use=''):
     incdir = bld.path.find_dir('inc')
     srcdir = bld.path.find_dir('src')
     dictdir = bld.path.find_dir('dict')
+    # why to I allow this!!!
     testsrc = bld.path.ant_glob('test/test_*.cxx') + bld.path.ant_glob('tests/test_*.cxx')
     appsdir = bld.path.find_dir('apps')
 
@@ -105,7 +106,7 @@ def make_package(bld, name, use='', app_use='', test_use=''):
                         source = [test_main], 
                         target = test_main.name.replace('.cxx',''),
                         install_path = None,
-                        includes = 'inc',
+                        includes = ['inc','test','tests'],
                         use = test_use + [name])
     if appsdir:
         for app in appsdir.ant_glob('*.cxx'):
