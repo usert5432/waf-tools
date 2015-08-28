@@ -25,16 +25,16 @@ _tooldir = osp.dirname(osp.abspath(__file__))
 def options(opt):
     opt.load('compiler_cxx')
     opt.load('waf_unit_test')
-    opt.load('find_root', tooldir=_tooldir)
-    opt.load('find_eigen3', tooldir=_tooldir)
+    opt.load('rootsys', tooldir=_tooldir)
+    #opt.load('eigen3', tooldir=_tooldir)
     opt.load('boost', tooldir=_tooldir)
     
 
 def configure(cfg):
     cfg.load('compiler_cxx')
     cfg.load('waf_unit_test')
-    cfg.load('find_root', tooldir=_tooldir)
-    cfg.load('find_eigen3', tooldir=_tooldir)
+    cfg.load('rootsys', tooldir=_tooldir)
+    #cfg.load('eigen3', tooldir=_tooldir)
     cfg.load('boost', tooldir=_tooldir)
 
     cfg.env.append_unique('CXXFLAGS',['--std=c++11'])
@@ -48,7 +48,7 @@ def build(bld):
 
 
 @conf
-def make_package(bld, name, use='', app_use='', test_use=''):
+def smplpkg(bld, name, use='', app_use='', test_use=''):
     use = list(set(to_list(use)))
     app_use = list(set(use + to_list(app_use)))
     test_use = list(set(use + to_list(test_use)))
