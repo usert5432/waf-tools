@@ -1,7 +1,5 @@
 # Some tools for waf.
 
-
-
 This repository holds some simple waf tools which help build code with waf.
 
 ## Preparing a custom copy of the waf command.
@@ -18,13 +16,13 @@ Make some working area:
 Get waf-tools:
 
     $ git clone git@github.com:BNLIF/waf-tools.git
-	$ export MYWAFTOOLS=`pwd`/waf-tools  # <-- just to refer to later
+	$ export MWT=`pwd`/waf-tools  # <-- just to refer to later
 
 Get and make waf:
 
     $ git clone https://github.com/waf-project/waf.git
-    $ cd waf
-	$ python waf-light --make-waf --prelude='' --tools=doxygen,boost,bjam,eigen3,rootsys,smplpkgs
+    $ cd waf/
+    $ python waf-light --tools=compate15,doxygen,boost,bjam,$MWT/eigen3.py,$MWT/rootsys.py,$MWT/smplpkgs.py
 
 Finally, copy the resulting `waf` into your top-level build area and
 possibly commit it.  Because this tool is now "waf + extras" it is
