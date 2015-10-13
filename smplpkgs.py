@@ -60,8 +60,8 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
     incdir = bld.path.find_dir('inc')
     srcdir = bld.path.find_dir('src')
     dictdir = bld.path.find_dir('dict')
-    # why to I allow this!!!
-    testsrc = bld.path.ant_glob('test/test_*.cxx') + bld.path.ant_glob('tests/test_*.cxx')
+
+    testsrc = bld.path.ant_glob('test/test_*.cxx')
     appsdir = bld.path.find_dir('apps')
 
     if incdir:
@@ -75,11 +75,12 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
     if srcdir:
         source += srcdir.ant_glob('*.cxx')
 
+    # fixme: I should move this out of here.
     # root dictionary
     if dictdir:
         if not headers:
             error('No header files for ROOT dictionary "%s"' % name)
-        print name,use
+        #print 'Building ROOT dictionary: %s using %s' % (name,use)
         if 'ROOTSYS' in use:
             linkdef = dictdir.find_resource('LinkDef.h')
             bld.gen_rootcling_dict(name, linkdef,
@@ -92,16 +93,18 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
 
     # the library
     if incdir and srcdir:
+        #print "Building library: %s using %s"%(name, use)
         bld(features = 'cxx cxxshlib',
             name = name,
             source = source,
             target = name,
             includes = 'inc',
             export_includes = 'inc',
-            use=use)
+            use = use)            
 
     if testsrc:
         for test_main in testsrc:
+            #print 'Building %s test: %s using %s' % (name, test_main, test_use)
             bld.program(features = 'test', 
                         source = [test_main], 
                         target = test_main.name.replace('.cxx',''),
@@ -110,6 +113,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
                         use = test_use + [name])
     if appsdir:
         for app in appsdir.ant_glob('*.cxx'):
+            #print 'Building %s app: %s using %s' % (name, app, app_use)
             bld.program(source = [app], 
                         target = app.name.replace('.cxx',''),
                         includes = 'inc',
