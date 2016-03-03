@@ -25,21 +25,14 @@ _tooldir = osp.dirname(osp.abspath(__file__))
 def options(opt):
     opt.load('compiler_cxx')
     opt.load('waf_unit_test')
-    opt.load('rootsys', tooldir=_tooldir)
-    #opt.load('eigen3', tooldir=_tooldir)
-    opt.load('boost', tooldir=_tooldir)
     
 
 def configure(cfg):
     cfg.load('compiler_cxx')
     cfg.load('waf_unit_test')
-    cfg.load('rootsys', tooldir=_tooldir)
-    #cfg.load('eigen3', tooldir=_tooldir)
-    cfg.load('boost', tooldir=_tooldir)
 
     cfg.env.append_unique('CXXFLAGS',['--std=c++11'])
 
-    cfg.check_boost(lib='system filesystem graph thread')
     pass
 
 def build(bld):
