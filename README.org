@@ -10,7 +10,7 @@ This repository holds some simple waf tools which help build code with waf.  In 
   $ python waf-light --tools=compate15,doxygen,boost,bjam,$MYWT/eigen3.py,$MYWT/rootsys.py,$MYWT/smplpkgs.py
 #+END_EXAMPLE
 
-The tools which are specified by name are provided by Waf.  the resulting =waf= file can be copied into the root of your top-level build package, eg [[https://github.com/WireCell/wire-cell-build][wire-cell-build]]. 
+The tools which are specified by name are provided by Waf.  the resulting =waf= file can be copied into the root of your top-level build package, eg [[https://github.com/WireCell/wire-cell-build][wire-cell-build]]. See [[./refresh-wcb]] for a simple script that bakes in some of the above commands.
 
 * Using the tools
 
