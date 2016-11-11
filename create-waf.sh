@@ -5,7 +5,7 @@ if [ -n "$target" ] ; then
     target="$(readlink -f $(dirname $target))/$(basename $target)"
 fi
 
-tools="eigen3 rootsys smplpkgs"
+tools="eigen tbb rootsys smplpkgs"
 
 wtdir=$(dirname $(readlink -f $BASH_SOURCE))
 echo "wtdir is $wtdir"
