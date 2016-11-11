@@ -1,0 +1,85 @@
+* Building a custom =waf= command
+
+This repository holds some simple waf tools which help build code with waf.  In particular it is used to produce the =wcb= Waf script for building the [[https://github.com/WireCell][Wire Cell Toolkit]].  These Waf tools are bundled into a main =waf= script in the usual Waf-way:
+
+#+BEGIN_EXAMPLE
+  $ git clone git@github.com:WireCell/waf-tools.git
+  $ export MYWT=`pwd`/waf-tools  # <-- just to refer to later
+  $ git clone https://github.com/waf-project/waf.git
+  $ cd waf/
+  $ python waf-light --tools=compate15,doxygen,boost,bjam,$MYWT/eigen3.py,$MYWT/rootsys.py,$MYWT/smplpkgs.py
+#+END_EXAMPLE
+
+The tools which are specified by name are provided by Waf.  the resulting =waf= file can be copied into the root of your top-level build package, eg [[https://github.com/WireCell/wire-cell-build][wire-cell-build]]. 
+
+* Using the tools
+
+The tools are introduced into your =wscript= in the usual way via the =load()= command.
+
+* Using the =smplpkgs= tool to build suites of packages
+
+The =smplpkgs= tool included in =waf-tools= provides a simple way to
+build a suite of software packages that have interdependencies without
+you, the developer, having to care much about the build system.
+
+** Package organization 
+
+To achieve this simplicity, some file and directory naminging
+conventions and organization must be followed, as illustrated:
+
+#+BEGIN_EXAMPLE
+  pkg1/
+  ├── wscript_build
+  ├── inc/
+  │   └── ProjectNamePkg1/*.h
+  ├── src/*.{cxx,h}
+  └── test/*.{cxx,h}
+  pkg2/
+  ├── wscript_build
+  ├── inc/
+  │   └── ProjectNamePkg2/*.h
+  ├── src/*.{cxx,h}
+  ├── app/*.{cxx,h}
+  └── test/*.{cxx,h}
+#+END_EXAMPLE
+
+Notes on the structure:
+
+- All packages placed in a top-level directory (not required, but aggregating them via =git submodule= is useful).
+- Public header files for the package must be placed under =<pkgdirname>/inc/<PackageName>/=
+- Library source (implementation and private headers) under =<pkgdirname>/src/=
+- Application source (implementation and private headers) under =<pkgdirname>/app/= with only main application files and one application per =*.cxx= file.
+- Test source (implementation and private headers) under =<pkgdirname>/test/= with main test programs named like =test_*.cxx=
+- A short `wscript_build` file in each package.
+
+The =<pkgdirname>= only matters in the top-level =wscript= file which you must provide.  The =<PackageName>= matters for inter-package dependencies.
+
+** The per-package =wscript_build= file
+
+Each package needs a brief (generally single line) file called =wscript_build= to exist at in its top-level directory.  It is responsible for declaring:
+
+- The package name
+- Library dependencies
+- Any additional application dependencies
+- Any additional test dependencies
+
+Example:
+
+#+BEGIN_SRC python
+  bld.smplpkg('MyPackage', use='YourPackage YourOtherPackage')
+#+END_SRC
+
+Test and application programs are allowed to have additional dependencies declared.  For example:
+
+#+BEGIN_SRC python
+  bld.smplpkg('MyPackage', use='YourPackage YourOtherPackage', test_use='ROOTSYS')
+#+END_SRC
+
+** The top-level =wscript= file
+
+Driving the build of all packages is a main =wscript= file.  It is responsible for:
+
+- loading any tools in =waf= =options/configure/build= contexts
+- recursing down into the package directories
+- handling any special build instructions not supported by =smplpkgs=.
+
