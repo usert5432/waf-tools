@@ -8,8 +8,9 @@ _tooldir = osp.dirname(osp.abspath(__file__))
 
 
 def options(opt):
+    opt = opt.add_option_group('ROOT Options')
     opt.add_option('--with-root', default=None,
-                   help="Look for CERN ROOT System at the given path")
+                   help="path to ROOT system installation")
     return
 
 def configure(cfg):
@@ -22,14 +23,20 @@ def configure(cfg):
         
     kwargs = dict(path_list=path_list)
 
+
     cfg.find_program('root-config', var='ROOT-CONFIG', **kwargs)
     cfg.check_cfg(path=cfg.env['ROOT-CONFIG'], uselib_store='ROOTSYS',
                   args = '--cflags --libs --ldflags', package='')
+    cfg.env.LIB_ROOTSYS += ['Minuit2','TreePlayer', 'EG']
+
     cfg.find_program('rootcling', var='ROOTCLING', path_list=path_list)
     cfg.find_program('rootcint', var='ROOTCINT', path_list=path_list)
     cfg.find_program('rlibmap', var='RLIBMAP', path_list=path_list, mandatory=False)
 
-    cfg.env.LIB_ROOTSYS += ['Minuit2','TreePlayer', 'EG']
+    cfg.check_cxx(header_name="Rtypes.h", use='ROOTSYS',
+                  mandatory=True)
+
+
     return
 
 @conf

@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# This script will recreate the "wcb" Waf script used to build the
+# Wire Cell Toolkit.  Normally only developers exercise it.  
+
+output="$(pwd)/wcb"
+wafurl="https://github.com/waf-project/waf.git"
+wafdir="$(pwd)/waf"
+
+toolsurl="https://github.com/WireCell/waf-tools.git"
+tooldir="$(pwd)/waf-tools"
+
+tools="compat15 doxygen boost bjam eigen tbb rootsys jsoncpp smplpkgs"
+
+usage () {
+    echo "refresh-wcb [options] [tools]"
+    echo "Default tools: $tools"
+    exit 1;
+}
+
+while getopts "w:t:o:W:T:" opt; do
+    case "$opt" in
+	w)
+	    wafdir="$(readlink -f $OPTARG)"
+	    ;;
+	w)
+	    tooldir="$(readlink -f $OPTARG)"
+	    ;;
+	o)
+	    output=$OPTARG
+	    ;;
+	W)
+	    wafurl=$OPTARG
+	    ;;
+	T)
+	    toolsurl=$OPTARG
+	    ;;
+	*)
+	    usage
+	    ;;
+    esac
+done
+shift $((OPTIND-1))
+[ "$1" = "--" ] && shift
+if [ -n "$1" ] ; then
+    tools="$@"
+fi
+
+if [ ! -d "$wafdir" ] ; then
+    git clone "$wafurl" "$wafdir"
+fi
+if [ ! -d "$tooldir" ] ; then
+    git clone "$toolsurl" "$tooldir"
+fi
+
+toolflags=""
+for tool in $tools ;
+do
+    maybe="$tooldir/${tool}.py"
+    if [ -f $maybe ] ; then
+	toolflags="$toolflags,$maybe"
+    else
+	toolflags="$toolflags,$tool" # assume user means a builtin
+    fi
+done
+
+echo "building waf with tools: $toolflags"
+pushd "$wafdir" > /dev/null
+python waf-light --tools=$toolflags
+popd > /dev/null
+mv "$wafdir/waf" $output
