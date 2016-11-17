@@ -8,9 +8,9 @@ wafurl="https://github.com/waf-project/waf.git"
 wafdir="$(pwd)/waf"
 
 toolsurl="https://github.com/WireCell/waf-tools.git"
-tooldir="$(pwd)/waf-tools"
+tooldir="$(pwd)"
 
-tools="compat15 doxygen boost bjam eigen tbb rootsys jsoncpp smplpkgs"
+tools="doxygen boost bjam fftw eigen tbb rootsys jsoncpp smplpkgs"
 
 usage () {
     echo "refresh-wcb [options] [tools]"
@@ -52,20 +52,37 @@ fi
 if [ ! -d "$tooldir" ] ; then
     git clone "$toolsurl" "$tooldir"
 fi
+if [ ! -f "$tooldir/smplpkgs.py" ] ; then
+    echo "Tooldir does not look correct: $tooldir"
+    exit 1
+fi
 
-toolflags=""
+toolflags="compat15"
 for tool in $tools ;
 do
     maybe="$tooldir/${tool}.py"
     if [ -f $maybe ] ; then
 	toolflags="$toolflags,$maybe"
-    else
-	toolflags="$toolflags,$tool" # assume user means a builtin
+	continue
     fi
+    maybe="$wafdir/waflib/Tools/${tool}.py"
+    if [ -f $maybe ] ; then
+	toolflags="$toolflags,$tool"
+	continue
+    fi
+    maybe="$wafdir/waflib/extras/${tool}.py"
+    if [ -f $maybe ] ; then
+	toolflags="$toolflags,$tool"
+	continue
+    fi
+    
+    echo "Failed to find tool $tool"
+    exit 1
 done
 
-echo "building waf with tools: $toolflags"
 pushd "$wafdir" > /dev/null
 python waf-light --tools=$toolflags
 popd > /dev/null
+echo "built waf with tools: $toolflags"
 mv "$wafdir/waf" $output
+echo "$output"

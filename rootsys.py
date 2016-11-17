@@ -10,10 +10,15 @@ _tooldir = osp.dirname(osp.abspath(__file__))
 def options(opt):
     opt = opt.add_option_group('ROOT Options')
     opt.add_option('--with-root', default=None,
-                   help="path to ROOT system installation")
+                   help="enable ROOT with 'yes' or specify installation location")
     return
 
-def configure(cfg):
+@conf
+def check_root(cfg, mandatory=True):
+    instdir = cfg.options.with_root
+    if instdir is None:
+        return
+
     cfg.env.CXXFLAGS += ['-fPIC']
 
     path_list = list()
@@ -26,18 +31,21 @@ def configure(cfg):
 
     cfg.find_program('root-config', var='ROOT-CONFIG', **kwargs)
     cfg.check_cfg(path=cfg.env['ROOT-CONFIG'], uselib_store='ROOTSYS',
-                  args = '--cflags --libs --ldflags', package='')
+                  args = '--cflags --libs --ldflags', package='', mandatory=mandatory)
     cfg.env.LIB_ROOTSYS += ['Minuit2','TreePlayer', 'EG']
 
-    cfg.find_program('rootcling', var='ROOTCLING', path_list=path_list)
-    cfg.find_program('rootcint', var='ROOTCINT', path_list=path_list)
+    cfg.find_program('rootcling', var='ROOTCLING', path_list=path_list, mandatory=mandatory)
+    cfg.find_program('rootcint', var='ROOTCINT', path_list=path_list, mandatory=mandatory)
     cfg.find_program('rlibmap', var='RLIBMAP', path_list=path_list, mandatory=False)
 
     cfg.check_cxx(header_name="Rtypes.h", use='ROOTSYS',
-                  mandatory=True)
+                  mandatory=mandatory)
 
 
     return
+
+def configure(cfg):
+    cfg.check_root()
 
 @conf
 def gen_rootcling_dict(bld, name, linkdef, headers = '', includes = '', use=''):
