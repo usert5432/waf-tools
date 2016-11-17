@@ -10,7 +10,7 @@ _tooldir = osp.dirname(osp.abspath(__file__))
 def options(opt):
     opt = opt.add_option_group('ROOT Options')
     opt.add_option('--with-root', default=None,
-                   help="enable ROOT with 'yes' or specify installation location")
+                   help="give ROOT installation location")
     return
 
 @conf

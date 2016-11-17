@@ -4,7 +4,7 @@ from waflib.Configure import conf
 def options(opt):
     opt = opt.add_option_group('JsonCpp Options')
     opt.add_option('--with-jsoncpp', type='string', default=None,
-                   help="enable JsonCpp with 'yes' or specify installation location")
+                   help="give JsonCpp installation location")
 
 @conf
 def check_jsoncpp(ctx, mandatory=True):
@@ -21,7 +21,10 @@ def check_jsoncpp(ctx, mandatory=True):
 
     ctx.check_cxx(header_name="json/json.h", use='JSONCPP', mandatory=mandatory)
     ctx.check_cxx(lib='jsoncpp', use='JSONCPP', mandatory=mandatory)
-    ctx.end_msg(ctx.env.INCLUDES_JSONCPP[0])
+    if len(ctx.env.INCLUDES_JSONCPP):
+        ctx.end_msg(ctx.env.INCLUDES_JSONCPP[0])
+    else:
+        ctx.end_msg("JsonCpp not found")
 
 
 def configure(cfg):

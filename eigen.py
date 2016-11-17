@@ -5,7 +5,7 @@ from waflib.Configure import conf
 def options(opt):
     opt = opt.add_option_group('Eigen Options')
     opt.add_option('--with-eigen', type='string',
-                   help="enable Eigen3 with 'yes' or specify installation location")
+                   help="give Eigen3 installation location")
 
 
 @conf
@@ -24,7 +24,10 @@ def check_eigen(ctx, mandatory=True):
         ctx.env.INCLUDES_EIGEN = [ osp.join(instdir,'include/eigen3') ]
 
     ctx.check(header_name="Eigen/Dense", use='EIGEN', mandatory=mandatory)
-    ctx.end_msg(ctx.env.INCLUDES_EIGEN[0], mandatory=mandatory)
+    if len(ctx.env.INCLUDES_EIGEN):
+        ctx.end_msg(ctx.env.INCLUDES_EIGEN[0])
+    else:
+        ctx.end_msg('Eigen3 not found')
 
 def configure(cfg):
     cfg.check_eigen()

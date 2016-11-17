@@ -5,7 +5,7 @@ from waflib.Configure import conf
 def options(opt):
     opt = opt.add_option_group('FFTW Options')
     opt.add_option('--with-fftw', type='string',
-                   help="enable FFTW3 with 'yes' or specify installation location")
+                   help="give FFTW3 installation location")
 
 
 @conf
@@ -22,8 +22,11 @@ def check_fftw(ctx, mandatory=True):
         ctx.env.INCLUDES_FFTW = [ osp.join(instdir,'include/fftw3') ]
 
     ctx.check(header_name="fftw3.h", use='FFTW', mandatory=mandatory)
-    ctx.end_msg(ctx.env.INCLUDES_FFTW[0])
-    ctx.env.LIB_FFTW += ['fftw3f']
+    ctx.env.LIB_FFTW += ['fftw3f'] # need to explicitly add floating point version of lib
+    if len(ctx.env.INCLUDES_FFTW):
+        ctx.end_msg(ctx.env.INCLUDES_FFTW[0])
+    else:
+        ctx.end_msg('FFTW3 not found')
 
 def configure(cfg):
     cfg.check_fftw()
