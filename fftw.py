@@ -23,6 +23,7 @@ def check_fftw(ctx, mandatory=True):
 
     ctx.check(header_name="fftw3.h", use='FFTW', mandatory=mandatory)
     ctx.end_msg(ctx.env.INCLUDES_FFTW[0])
+    ctx.env.LIB_FFTW += ['fftw3f']
 
 def configure(cfg):
     cfg.check_fftw()
