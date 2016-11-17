@@ -16,7 +16,8 @@ def options(opt):
 @conf
 def check_root(cfg, mandatory=True):
     instdir = cfg.options.with_root
-    if instdir is None:
+
+    if instdir and instdir.lower() in ['no','off','false']:
         return
 
     cfg.env.CXXFLAGS += ['-fPIC']

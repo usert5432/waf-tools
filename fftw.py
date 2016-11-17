@@ -11,12 +11,12 @@ def options(opt):
 @conf
 def check_fftw(ctx, mandatory=True):
     instdir = ctx.options.with_fftw
-    if instdir is None:
-        return
 
-    if instdir.lower() in ['yes','true','on']:
+    if instdir is None or instdir.lower() in ['yes','true','on']:
         ctx.start_msg('Checking for FFTW in PKG_CONFIG_PATH')
         ctx.check_cfg(package='fftw3',  uselib_store='FFTW', args='--cflags --libs', mandatory=mandatory)
+    elif instdir.lower() in ['no','off','false']:
+        return
     else:
         ctx.start_msg('Checking for FFTW in %s' % instdir)
         ctx.env.INCLUDES_FFTW = [ osp.join(instdir,'include/fftw3') ]

@@ -9,13 +9,13 @@ def options(opt):
 @conf
 def check_tbb(ctx, mandatory=True):
     instdir = ctx.options.with_tbb
-    if instdir is None:
-        return
 
-    if instdir.lower() in ['yes','on','true']:
+    if instdir is None or instdir.lower() in ['yes','on','true']:
         ctx.start_msg('Checking for TBB in system paths', mandatory=mandatory)
         ctx.env.LIBPATH_TBB = ['/usr/local/lib/', '/usr/lib', '/opt/intel/tbb/lib']
         ctx.env.INCLUDES_TBB = ['/usr/local/include', '/usr/include', '/opt/intel/tbb/include']
+    elif instdir.lower() in ['no','off','false']:
+        return
     else:
         ctx.start_msg('Checking for TBB in %s' % instdir)
         ctx.env.LIBPATH_TBB = [ osp.join(instdir, 'lib') ]

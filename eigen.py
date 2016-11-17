@@ -11,14 +11,14 @@ def options(opt):
 @conf
 def check_eigen(ctx, mandatory=True):
     instdir = ctx.options.with_eigen
-    if instdir is None:
-        return
 
-    if instdir.lower() in ['yes','true','on']:
+    if instdir is None or instdir.lower() in ['yes','true','on']:
         ctx.start_msg('Checking for Eigen in PKG_CONFIG_PATH')
         # note: Eigen puts its eigen3.pc file under share as there is
         # no lib.  Be sure your PKG_CONFIG_PATH reflects this.
         ctx.check_cfg(package='eigen3',  uselib_store='EIGEN', args='--cflags --libs', mandatory=mandatory)
+    elif instdir.lower() in ['no','off','false']:
+        return
     else:
         ctx.start_msg('Checking for Eigen in %s' % instdir)
         ctx.env.INCLUDES_EIGEN = [ osp.join(instdir,'include/eigen3') ]
