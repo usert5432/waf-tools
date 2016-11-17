@@ -15,11 +15,9 @@ The tools which are specified by name are provided by Waf.  the resulting =waf= 
 To rebuild =wcb= for Wire Cell simply run  [[./refresh-wcb]]:
 
 #+BEGIN_EXAMPLE
-  $ cd /path/to/wire-cell-build
-  $ /path/to/waf-tools/refresh-wcb
-  $ git commit -m "Updated wcb" wcb
+  $ cd waf-tools
+  $ ./refresh-wcb -o /path/to/wire-cell-build/wcb
 #+END_EXAMPLE
-
 
 
 * Using the tools

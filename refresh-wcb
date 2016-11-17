@@ -23,7 +23,7 @@ while getopts "w:t:o:W:T:" opt; do
 	w)
 	    wafdir="$(readlink -f $OPTARG)"
 	    ;;
-	w)
+	t)
 	    tooldir="$(readlink -f $OPTARG)"
 	    ;;
 	o)
