@@ -6,6 +6,7 @@
 output="$(pwd)/wcb"
 wafurl="https://github.com/waf-project/waf.git"
 wafdir="$(pwd)/waf"
+waftag="waf-1.9.7"
 
 toolsurl="https://github.com/WireCell/waf-tools.git"
 tooldir="$(pwd)"
@@ -15,11 +16,16 @@ tools="doxygen boost bjam fftw eigen tbb rootsys jsoncpp smplpkgs"
 usage () {
     echo "refresh-wcb [options] [tools]"
     echo "Default tools: $tools"
+    echo "Likely call:"
+    echo "./refresh-wcb -o /path/to/wire-cell-build/wcb"
     exit 1;
 }
 
-while getopts "w:t:o:W:T:" opt; do
+while getopts "v:w:t:o:W:T:" opt; do
     case "$opt" in
+        v)
+            waftag="waf-$OPTARG"
+            ;;
 	w)
 	    wafdir="$(readlink -f $OPTARG)"
 	    ;;
@@ -46,8 +52,16 @@ if [ -n "$1" ] ; then
     tools="$@"
 fi
 
-if [ ! -d "$wafdir" ] ; then
+if [ -d "$wafdir" ] ; then
+    pushd $wafdir
+    git fetch
+    git checkout $waftag
+    popd
+else
     git clone "$wafurl" "$wafdir"
+    pushd $wafdir
+    git checkout $waftag
+    popd
 fi
 if [ ! -d "$tooldir" ] ; then
     git clone "$toolsurl" "$tooldir"
