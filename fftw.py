@@ -6,6 +6,10 @@ def options(opt):
     opt = opt.add_option_group('FFTW Options')
     opt.add_option('--with-fftw', type='string',
                    help="give FFTW3 installation location")
+    opt.add_option('--with-fftw-include', type='string', default='',
+                   help="give FFTW3 include installation location")
+    opt.add_option('--with-fftw-lib', type='string', default='',
+                   help="give FFTW3 lib installation location")
 
 
 @conf
@@ -20,8 +24,12 @@ def check_fftw(ctx, mandatory=True):
         return
     else:
         ctx.start_msg('Checking for FFTW in %s' % instdir)
-        ctx.env.INCLUDES_FFTW = [osp.join(instdir, 'include/fftw3'),
-                                 osp.join(instdir, 'include')]
+        if ctx.options.with_fftw_include:
+            ctx.env.INCLUDES_FFTW = [ctx.options.with_fftw_include]
+        else:
+            ctx.env.INCLUDES_FFTW = [osp.join(instdir, 'include/fftw3')]
+        if ctx.options.with_fftw_lib:
+            ctx.env.LIBPATH_FFTW = [ctx.options.with_fftw_lib]
 
     ctx.check(header_name="fftw3.h", use='FFTW', mandatory=mandatory)
     # need to explicitly add floating point version of lib
