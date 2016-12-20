@@ -19,6 +19,7 @@ To rebuild =wcb= for Wire Cell simply run  [[./refresh-wcb]]:
   $ ./refresh-wcb -o /path/to/wire-cell-build/wcb
 #+END_EXAMPLE
 
+*Warning* you must do the above outside of an otherwise Waf-controlled directory.
 
 * Using the tools
 
