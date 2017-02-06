@@ -1,22 +1,16 @@
-* Building a custom =waf= command
+* Overview
 
-This repository holds some simple Waf tools which help build code with waf.  In particular it is used to produce the =wcb= Waf script for building the [[https://github.com/WireCell][Wire Cell Toolkit]].  These Waf tools are bundled into a main =waf= script in the usual Waf-way:
+This repository holds some simple Waf tools which help build code with =waf=.  
+The Python modules it contains must be available to a Waf context =load()=. 
+It's recommended that any build package relying on this one include it via git submodule or similar.
+
+As a note, waf includes useful tools of its own which may not be included by default.  
+To include them into a custom =waf= command do something like:
 
 #+BEGIN_EXAMPLE
-  $ git clone git@github.com:WireCell/waf-tools.git
-  $ export MYWT=`pwd`/waf-tools  # <-- just to refer to later
   $ git clone https://github.com/waf-project/waf.git
   $ cd waf/
-  $ python waf-light --tools=compate15,doxygen,boost,bjam,$MYWT/eigen3.py,$MYWT/rootsys.py,$MYWT/smplpkgs.py
-#+END_EXAMPLE
-
-The tools which are specified by name are provided by Waf.  the resulting =waf= file can be copied into the root of your top-level build package, eg [[https://github.com/WireCell/wire-cell-build][wire-cell-build]]. 
-
-To rebuild =wcb= for Wire Cell simply run  [[./refresh-wcb]]:
-
-#+BEGIN_EXAMPLE
-  $ cd waf-tools
-  $ ./refresh-wcb -o /path/to/wire-cell-build/wcb
+  $ ./waf-light --tools=compat15,doxygen,boost,bjam
 #+END_EXAMPLE
 
 *Warning* you must do the above outside of an otherwise Waf-controlled directory.
