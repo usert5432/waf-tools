@@ -4,15 +4,15 @@
 #
 # 1) Get source code for a tagged release
 #
-# $ ./test-release.sh  get-source path/to/source 0.5.0
+# $ ./test-release.sh  get-source <path/to/source> <release-tag>
 #
 # 2) Configure the source by telling it where to find externals and where to install (must not exist)
 #
-# $ ./test-release.sh configure-source path/to/source path/to/externals path/to/install
+# $ ./test-release.sh configure-source <path/to/source> <path/to/externals> <path/to/install>
 #
 # 3) Build, install and run tests
 #
-# $ ./test-release.sh install path/to/source
+# $ ./test-release.sh install <path/to/source>
 ####
 
 

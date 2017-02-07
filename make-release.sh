@@ -69,7 +69,7 @@ function make-branch
         # already
         git checkout $branch
     else
-        git checkout -b $branch --track origin/$remref
+        git checkout -b $branch origin/$remref
     fi
     goback
 }
@@ -111,10 +111,6 @@ function branch-submodules
         git submodule foreach git checkout -b $branch --track origin/$remref
     fi
 
-    # crazy hack to make sure .gitmodules is updated
-    git submodule foreach 'branch="$(git --git-dir=../.git rev-parse --abbrev-ref HEAD)"; sm="$(basename $(pwd))"; git config -f ../.gitmodules submodule.$sm.branch $branch'
-
-
     goback
 }
 
@@ -126,6 +122,27 @@ function update-submodules
     goback
 }
 
+function fix-dotgitmodules
+{
+    local branch=${1?must provide branch} ; shift
+
+    local org="WireCell"
+    local dev_url="git@github.com:$org"
+    local usr_url="https://github.com/$org"
+
+    # move to anon-friend URL for releases
+    sed -i -e 's|'$dev_url'|'$usr_url'|'g $branch/.gitmodules
+
+    # Crazy hack to make sure .gitmodules is updated with new branch
+    # for each surviving submodule.  There is probably a better way to
+    # do this!
+    git submodule foreach 'branch="$(git --git-dir=../.git rev-parse --abbrev-ref HEAD)"; sm="$(basename $(pwd))"; git config -f ../.gitmodules submodule.$sm.branch $branch'
+
+    # Do NOT actually sync
+    #git submodule sync
+}
+
+
 # kitchen sink function
 function bring-forward
 {
@@ -134,6 +151,9 @@ function bring-forward
     echo -e "\ngetting source\n"
     get-source $branch || exit 1
 
+    echo -e "\nmaking top branch\n"
+    make-branch $branch ||exit 1
+
     unwanted_submodules="alg bio dfp gen rio riodata rootdict rootvis tbb"
     echo -e "\npurging submodules: $unwanted_submodules\n"
     purge-submodules $branch $unwanted_submodules
@@ -141,11 +161,12 @@ function bring-forward
     echo -e "\nbranching submodules\n"
     branch-submodules $branch master
 
-    echo -e "\nmaking top branch\n"
-    make-branch $branch ||exit 1
-
     echo -e "\nupdating submodules\n"
     update-submodules $branch
+
+    echo -e "\nswitch submodule URLs\n"
+    fix-dotgitmodules $branch
+
 
     # fixme: specify which submodules to keep, purge all others
     # fixme bonus1: hard code some (waftools, util, iface)
@@ -165,20 +186,6 @@ function apply-submodule-tags
     goback
 }
 
-
-function submodule-urls
-{
-    local branch=${1?must provide branch} ; shift
-
-    local org="WireCell"
-    local dev_url="git@github.com:$org"
-    local usr_url="https://github.com/$org"
-
-    sed -i -e 's|'$dev_url'|'$usr_url'|'g $branch/.gitmodules
-
-    # Do NOT actually sync
-    #git submodule sync
-}
 
 function commit-tag-main
 {
@@ -203,9 +210,6 @@ function apply-tags
 
     echo -e "\napplying submodule tags\n"
     apply-submodule-tags $branch $tag "$message"
-
-    echo -e "\nswitch submodule URLs\n"
-    submodule-urls $branch
 
     echo -e "\ncommitting and tagging top\n"
     commit-tag-main $branch $tag "$message"
