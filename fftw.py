@@ -34,6 +34,8 @@ def check_fftw(ctx, mandatory=True):
     ctx.check(header_name="fftw3.h", use='FFTW', mandatory=mandatory)
     # need to explicitly add floating point version of lib
     ctx.env.LIB_FFTW += ['fftw3f']
+    # ibid if using double-precision:
+    # ctx.env.LIB_FFTW += ['fftw3']
     if len(ctx.env.INCLUDES_FFTW):
         ctx.end_msg(ctx.env.INCLUDES_FFTW[0])
     else:
