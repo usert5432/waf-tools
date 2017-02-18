@@ -58,18 +58,15 @@ function make-branch
     local branch=${1?must provide branch} ; shift
     goto $branch
 
-    local remref=${1:-master}; shift
-    
-    if [ -z "$(git show-ref refs/remotes/origin/$remref)" ] ; then
-        echo "No remote ref: $remref"
-        exit 1
-    fi
-
     if [ -n "$(git show-ref refs/heads/$branch)" ] ; then
-        # already
+        echo "Already have local: $branch"
         git checkout $branch
-    else
-        git checkout -b $branch origin/$remref
+    elif [ -n "$(git show-ref remotes/origin/$branch)" ] ; then
+        echo "Branch on origin: $branch"
+        git checkout -b $branch origin/$branch
+    else        
+        echo "Initial creation of branch: $branch"
+        git checkout -b $branch origin/master
     fi
     goback
 }
@@ -81,15 +78,10 @@ function purge-submodules
     local submodules=$@
 
     for sm in $submodules ; do
-        if [ ! -d $sm ] ; then
-            echo "No such submodule: $sm"
-            exit 1
+        if [ -d $sm ] ; then
+            git submodule deinit $sm || exit 1
+            git rm $sm || exit 1
         fi
-    done
-    
-    for sm in $submodules ; do
-        git submodule deinit $sm || exit 1
-        git rm $sm || exit 1
     done
     goback
 }
@@ -99,17 +91,11 @@ function branch-submodules
 {
     local branch=${1?must provide branch} ; shift
     goto $branch
-    local remref=${1:?must provide remote ref}; shift
 
     git submodule init || exit 1
     git submodule update || exit 1
     
-    if [ -n "$(git show-ref refs/heads/$branch)" ] ; then
-        # already
-        git submodule foreach git checkout $branch
-    else
-        git submodule foreach git checkout -b $branch --track origin/$remref
-    fi
+    git submodule foreach "git checkout $branch || git checkout -b $branch --track origin/master"
 
     goback
 }
@@ -130,8 +116,10 @@ function fix-dotgitmodules
     local dev_url="git@github.com:$org"
     local usr_url="https://github.com/$org"
 
+    goto $branch
+
     # move to anon-friend URL for releases
-    sed -i -e 's|'$dev_url'|'$usr_url'|'g $branch/.gitmodules
+    sed -i -e 's|'$dev_url'|'$usr_url'|'g .gitmodules
 
     # Crazy hack to make sure .gitmodules is updated with new branch
     # for each surviving submodule.  There is probably a better way to
@@ -140,6 +128,8 @@ function fix-dotgitmodules
 
     # Do NOT actually sync
     #git submodule sync
+
+    goback
 }
 
 
@@ -159,7 +149,7 @@ function bring-forward
     purge-submodules $branch $unwanted_submodules
 
     echo -e "\nbranching submodules\n"
-    branch-submodules $branch master
+    branch-submodules $branch
 
     echo -e "\nupdating submodules\n"
     update-submodules $branch
