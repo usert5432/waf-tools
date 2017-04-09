@@ -10,7 +10,8 @@ def options(opt):
 def check_jsonnet(ctx, mandatory=False):
     instdir = ctx.options.with_jsonnet
     # default or user says they want it but doesn't say where it is.  Let's see
-    # if pkg-config can find it.
+    # if pkg-config can find it.  Probably not as jsonnet doesn't have
+    # pkg-config support....
     if instdir is None or instdir.lower() in ['yes','on','true']:   
         ctx.start_msg('Checking for Eigen in PKG_CONFIG_PATH')
         ctx.check_cfg(package='jsoncpp',  uselib_store='JSONCPP', args='--cflags --libs', mandatory=mandatory)
@@ -22,6 +23,7 @@ def check_jsonnet(ctx, mandatory=False):
         ctx.start_msg('Checking for Jsonnet in %s' % instdir)
         ctx.env.LIBPATH_JSONNET = [ osp.join(instdir, 'lib') ]
         ctx.env.INCLUDES_JSONNET = [ osp.join(instdir, 'include') ]
+        ctx.env.LIB_JSONNET += ["jsonnet++"]
 
     ctx.check_cxx(header_name="libjsonnet++.h", use='JSONNET', mandatory=mandatory)
     ctx.check_cxx(lib='jsonnet++', use='JSONNET', mandatory=mandatory)
