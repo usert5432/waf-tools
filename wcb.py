@@ -12,6 +12,7 @@ def options(opt):
     opt.load('fftw',tooldir=mydir)
     opt.load('eigen',tooldir=mydir)
     opt.load('jsoncpp',tooldir=mydir)
+    opt.load('jsonnet',tooldir=mydir)
     opt.load('tbb',tooldir=mydir)
 
     opt.add_option('--build-debug', default='-O2 -ggdb3',
@@ -24,6 +25,7 @@ def configure(cfg):
     cfg.load('rootsys')
     cfg.load('eigen')
     cfg.load('jsoncpp')
+    cfg.load('jsonnet')
     cfg.load('tbb')
     cfg.load('fftw')
 
