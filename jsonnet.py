@@ -7,7 +7,7 @@ def options(opt):
                    help="give Jsonnet installation location")
 
 @conf
-def check_jsonnet(ctx, mandatory=False):
+def check_jsonnet(ctx, mandatory=True):
     instdir = ctx.options.with_jsonnet
     # default or user says they want it but doesn't say where it is.  Let's see
     # if pkg-config can find it.  Probably not as jsonnet doesn't have
