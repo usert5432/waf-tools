@@ -10,7 +10,7 @@ def options(opt):
 def check_jsoncpp(ctx, mandatory=True):
     instdir = ctx.options.with_jsoncpp
     if instdir is None or instdir.lower() in ['yes','on','true']:
-        ctx.start_msg('Checking for Eigen in PKG_CONFIG_PATH')
+        ctx.start_msg('Checking for JSONCPP in PKG_CONFIG_PATH')
         ctx.check_cfg(package='jsoncpp',  uselib_store='JSONCPP', args='--cflags --libs', mandatory=mandatory)
     elif instdir.lower() in ['no','off','false']:
         return

@@ -13,7 +13,7 @@ def check_jsonnet(ctx, mandatory=True):
     # if pkg-config can find it.  Probably not as jsonnet doesn't have
     # pkg-config support....
     if instdir is None or instdir.lower() in ['yes','on','true']:   
-        ctx.start_msg('Checking for Eigen in PKG_CONFIG_PATH')
+        ctx.start_msg('Checking for Jsonnet in PKG_CONFIG_PATH')
         ctx.check_cfg(package='jsoncpp',  uselib_store='JSONCPP', args='--cflags --libs', mandatory=mandatory)
     # user explicitly doesn't want it
     elif instdir.lower() in ['no','off','false']:
