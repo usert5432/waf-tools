@@ -1,5 +1,5 @@
 import os.path as osp
-from waflib.Configure import conf
+from waflib.Configure import conf, Errors
 
 
 def options(opt):
@@ -40,7 +40,7 @@ def check_fftw(ctx, mandatory=True):
         ctx.end_msg(ctx.env.INCLUDES_FFTW[0])
     else:
         ctx.end_msg('FFTW3 not found')
-
+        raise Errors.ConfigurationError("FFTW3 not found")
 
 def configure(cfg):
     cfg.check_fftw()
