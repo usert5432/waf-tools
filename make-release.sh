@@ -9,16 +9,18 @@
 
 # 1) Create release source area.  This leaves the main repo and each
 # submodule sitting at the tip of the given branch.  This has many
-# steps which can also be done individually.  Note, and fixme: this
-# hard-codes a list of submodules to purge out of the release.
+# steps which can also be done individually.  Warning: this hard-codes
+# a list of submodules to purge out of the release so edit it in
+# master before staring a release..
 #
 # $ ./make-release.sh bring-forward 0.5.x
 #
-# 2) If the tips are what is needed then tag everything and make a top
-# level commit.  Note, this commit is not pushed.  Note: the source
-# area is left in a slightly inconsistent state in that the submodule
-# URLs are changed to HTTPS but this is no "git submodule sysnc" is
-# done.  This is so the push step can still go via SSH.
+# 2) If the master tips of each submodule are what is needed then tag
+# everything and make a top level commit.  Note, this commit is not
+# pushed.  Note: the source area is left in a slightly inconsistent
+# state in that the submodule URLs are changed to HTTPS but no "git
+# submodule sysnc" is done.  This is so the push step can still go via
+# SSH.
 #
 # $ ./make-release.sh apply-tags 0.5.x 0.5.0 "Some useful one liner describing major changes."
 #
