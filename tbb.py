@@ -8,7 +8,7 @@ def options(opt):
                    help="give TBB installation location")
 
 @conf
-def check_tbb(ctx, mandatory=True):
+def check_tbb(ctx, mandatory=False):
     instdir = ctx.options.with_tbb
 
     if instdir is None or instdir.lower() in ['yes','on','true']:
