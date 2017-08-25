@@ -25,7 +25,9 @@ def check_jsonnet(ctx, mandatory=True):
         ctx.env.INCLUDES_JSONNET = [ osp.join(instdir, 'include') ]
         ctx.env.LIB_JSONNET += ["jsonnet++"]
 
-    ctx.find_program("jsonnet", var="JSONNET", use='JSONNET', mandatory=True)
+    # we don't need the actual executable
+    #ctx.find_program("jsonnet", var="JSONNET", use='JSONNET', mandatory=True)
+
     ctx.check_cxx(header_name="libjsonnet++.h", use='JSONNET', mandatory=mandatory)
     ctx.check_cxx(lib='jsonnet++', use='JSONNET', mandatory=mandatory)
     if len(ctx.env.INCLUDES_JSONNET):
