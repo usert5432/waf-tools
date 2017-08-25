@@ -58,4 +58,5 @@ env CC=gcc CXX=g++ FC=gfortran \
     --boost-includes=${products}/boost/v1_63_0b/${flavor}/include \
     --boost-libs=${products}/boost/v1_63_0b/${flavor}/lib \
     --boost-mt \
-    --prefix=${products}/wirecell/v0_6_0dev/${flavor}
+    --prefix=install
+#    --prefix=${products}/wirecell/v0_6_0dev/${flavor}
