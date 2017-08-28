@@ -87,7 +87,7 @@ function purge-submodules
     done
     goback
 }
-# alg bio dfp gen rio riodata rootdict rootvis tbb
+# alg bio dfp rio riodata rootdict rootvis tbb
 
 function branch-submodules
 {
@@ -146,7 +146,7 @@ function bring-forward
     echo -e "\nmaking top branch\n"
     make-branch $branch ||exit 1
 
-    unwanted_submodules="alg bio dfp gen rio riodata rootdict rootvis tbb"
+    unwanted_submodules="alg bio dfp rio riodata rootdict rootvis tbb"
     echo -e "\npurging submodules: $unwanted_submodules\n"
     purge-submodules $branch $unwanted_submodules
 
