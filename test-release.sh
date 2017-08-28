@@ -76,8 +76,8 @@ function configure-source
           --boost-mt \
           --with-eigen=$externals \
           --with-jsoncpp=$externals \
-          --with-tbb=$externals \
-          --with-root=$externals \
+	  --with-jsonnet=$externals \
+          --with-tbb=no \
           --with-fftw=$externals \
           --with-root=$externals
     

@@ -84,6 +84,22 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
         else:
             warn('No ROOT dictionary will be generated for "%s" unless "ROOTSYS" added to "use"' % name)
 
+    def get_rpath(uselst, local=True):
+        ret = set([bld.env["PREFIX"]+"/lib"])
+        for one in uselst:
+            libpath = bld.env["LIBPATH_"+one]
+            for l in libpath:
+                ret.add(l)
+            if local:
+                if one.startswith("WireCell"):
+                    sd = one[8:].lower()
+                    blddir = bld.path.find_or_declare(bld.out_dir)
+                    pkgdir = blddir.find_or_declare(sd).abspath()
+                    #print pkgdir
+                    ret.add(pkgdir)
+        ret = list(ret)
+        return ret
+
     # the library
     if incdir and srcdir:
         #print "Building library: %s using %s"%(name, use)
@@ -91,6 +107,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
             name = name,
             source = source,
             target = name,
+            #rpath = get_rpath(use),
             includes = 'inc',
             export_includes = 'inc',
             use = use)            
@@ -98,10 +115,13 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
     if testsrc:
         for test_main in testsrc:
             #print 'Building %s test: %s using %s' % (name, test_main, test_use)
+            rpath = get_rpath(test_use + [name])
+            #print rpath
             bld.program(features = 'test', 
                         source = [test_main], 
                         target = test_main.name.replace('.cxx',''),
                         install_path = None,
+                        rpath = rpath,
                         includes = ['inc','test','tests'],
                         use = test_use + [name])
     if appsdir:
@@ -110,6 +130,6 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
             bld.program(source = [app], 
                         target = app.name.replace('.cxx',''),
                         includes = 'inc',
+                        rpath = get_rpath(app_use + [name], local=False),
                         use = app_use + [name])
 
-    
