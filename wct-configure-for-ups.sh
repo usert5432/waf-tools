@@ -6,12 +6,26 @@ usage () {
 Configure WCT source for building against a UPS products area.
 usage:
 
-  wct-configure-for-art-bv.sh [productsdir]
+  wct-configure-for-ups.sh
 
-A UPS products directory may be taken from the first entry of
-$PRODUCTS or overridden on the command line.  This same directory will
-be where the WCT installation is placed.  Detailed external versions
-are hard-coded to match the current nominally expected environment.
+It is assumed that the calling environment is configured already for a
+pre-declared "wirecell" UPS product.  A declaration command goes
+something like:
+
+  $ ups declare wirecell <version> \
+       -f \$(ups flavor) \
+       -q e14:prof \
+       -r wirecell/<version> \
+       -z /path/to/install/products \
+       -U ups  \
+       -m wirecell.table
+
+  $ setup wirecell <version> -q e14:prof
+
+This script will then use the UPS environment variables to locate
+WCT's dependencies and a "./wcb install" will install into the defined
+$WIRECELL_FQ_DIR.  Beware that this will overwrite any existing files
+in that directory.
 EOF
     exit
 }
@@ -33,30 +47,19 @@ set_products () {
 }
 set_products
 
-flavor="Linux64bit+4.4-2.23-e14-prof"
-lsbrel="$(lsb_release -c)"
-case $lsbrel in
-    xenial) flavor="Linux64bit+4.4-2.23-e14-prof" ;;
-    *) flavor="Linux64bit+4.4-2.23-e14-prof" ;;
-esac
-	    
-
-# - PRODUCTS
-
-#    --with-tbb=${products}/tbb/v2017_3c/${flavor} \
 
 env CC=gcc CXX=g++ FC=gfortran \
     ./wcb configure \
     --with-tbb=no \
-    --with-jsoncpp=${products}/jsoncpp/v1_7_7/${flavor} \
-    --with-jsonnet=${products}/jsonnet/v0_9_3/${flavor} \
-    --with-eigen=${products}/eigen/v3_3_3 \
-    --with-root=${products}/root/v6_08_06g/Linux64bit+4.4-2.23-e14-nu-prof \
-    --with-fftw=${products}/fftw/v3_3_6_pl2/Linux64bit+4.4-2.23-prof \
-    --with-fftw-include=${products}/fftw/v3_3_6_pl2/Linux64bit+4.4-2.23-prof/include \
-    --with-fftw-lib=${products}/fftw/v3_3_6_pl2/Linux64bit+4.4-2.23-prof/lib \
-    --boost-includes=${products}/boost/v1_63_0b/${flavor}/include \
-    --boost-libs=${products}/boost/v1_63_0b/${flavor}/lib \
+    --with-jsoncpp=${JSONCPP_FQ_DIR} \
+    --with-jsonnet=${JSONNET_FQ_DIR} \
+    --with-eigen=${EIGEN_DIR} \
+    --with-root=${ROOTSYS} \
+    --with-fftw=${FFTW_FQ_DIR} \
+    --with-fftw-include=${FFTW_INCLUDE_DIR} \
+    --with-fftw-lib=${FFTW_LIBRARY} \
+    --boost-includes=${BOOST_INC} \
+    --boost-libs=${BOOST_LIB} \
     --boost-mt \
-    --prefix=install
-#    --prefix=${products}/wirecell/v0_6_0dev/${flavor}
+    --prefix=${WIRECELL_FQ_DIR}
+
