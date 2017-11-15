@@ -49,9 +49,16 @@ topdir=$(dirname $(dirname $(readlink -f $BASH_SOURCE)))
 #--with-fftw-lib="$view/lib" \
 
 cat <<EOF
-For runtime setup, copy-paste:
+# For runtime setup, copy-paste:
 PATH=$view/bin:\$PATH
 export LD_LIBRARY_PATH=$view/lib:\$LD_LIBRARY_PATH
+
+# or if preferred:
+source $view/bin/thisroot.sh
+source $view/bin/geant4.sh
+
+# and this may be needed
+export ROOT_INCLUDE_PATH=$view/include
 EOF
 
 
