@@ -26,7 +26,8 @@ view="$1"
 if [ -z "$view" ] ; then
     usage
 fi
-inst="${2:-view}"
+inst="${2:-$view}"
+echo "Will 'wcb install' to $inst"
 
 topdir=$(dirname $(dirname $(readlink -f $BASH_SOURCE)))
 
