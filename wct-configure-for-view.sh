@@ -51,8 +51,8 @@ topdir=$(dirname $(dirname $(readlink -f $BASH_SOURCE)))
 
 cat <<EOF
 # For runtime setup, copy-paste:
-PATH=$view/bin:\$PATH
-export LD_LIBRARY_PATH=$view/lib:\$LD_LIBRARY_PATH
+PATH=$inst/bin:$view/bin:\$PATH
+export LD_LIBRARY_PATH=$inst/lib:$view/lib:\$LD_LIBRARY_PATH
 
 # or if preferred:
 source $view/bin/thisroot.sh
