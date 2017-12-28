@@ -112,7 +112,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
             export_includes = 'inc',
             use = use)            
 
-    if testsrc:
+    if testsrc and not bld.options.no_tests:
         for test_main in testsrc:
             #print 'Building %s test: %s using %s' % (name, test_main, test_use)
             rpath = get_rpath(test_use + [name])
