@@ -5,13 +5,39 @@ usage () {
     cat <<EOF
 Configure WCT source for building against a UPS products.
 
-  wct-configure-for-art-bv.sh install_directory
+  wct-configure-for-ups.sh install_directory
 
-This assumes the UPS environment for the dependent products are
+This assumes the UPS environment for the dependent products is
 already "setup".  
+
+If install_directory is outside of UPS control then you can stop
+reading now.
 
 If the install_directory is the string "ups" then the source will be
 configured to install into $WIRECELL_FQ_DIR.
+
+That may point to a pre-existing "wirecell" UPS product.  If it does,
+reusing it will install files on top of any pre-exising ones without
+check so be careful.  
+
+To make a fresh "wirecell" UPS produce area one can "declare" it like:
+
+  $ ups declare wirecell <version> \
+       -f \$(ups flavor) \
+       -q e14:prof \
+       -r wirecell/<version> \
+       -z /path/to/install/products \
+       -U ups  \
+       -m wirecell.table
+
+You'll have to provide the wirecell.table yourself, likely by copying
+it from an existing "wirecell" UPS product.
+
+Then, the calling environment can be munged like:
+
+  $ setup wirecell <version> -q e14:prof
+
+UPS is such a great and simple system! /s
 
 EOF
     exit
@@ -22,11 +48,7 @@ if [ "$install_dir" = "ups" ] ; then
     install_dir="$WIRECELL_FQ_DIR"
 fi
 
-
-# - PRODUCTS
-
-#    --with-tbb=${products}/tbb/v2017_3c/${flavor} \
-
+# force to pick up GCC from PATH 
 env CC=gcc CXX=g++ FC=gfortran \
     ./wcb configure \
     --with-tbb=no \
