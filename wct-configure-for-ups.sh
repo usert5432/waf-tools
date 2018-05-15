@@ -58,7 +58,7 @@ env CC=gcc CXX=g++ FC=gfortran \
     --with-root="$ROOT_FQ_DIR" \
     --with-fftw="$FFTW_FQ_DIR" \
     --with-fftw-include="$FFTW_INC" \
-    --with-fftw-lib="$FFTW_LIB" \
+    --with-fftw-lib="$FFTW_LIBRARY" \
     --boost-includes="$BOOST_INC" \
     --boost-libs="$BOOST_LIB" \
     --boost-mt \
