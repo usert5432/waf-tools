@@ -49,7 +49,10 @@ if [ "$install_dir" = "ups" ] ; then
 fi
 
 # force to pick up GCC from PATH 
-env CC=gcc CXX=g++ FC=gfortran \
+wct_cc=${CC:-gcc}
+wct_cxx=${CXX:-g++}
+wct_fort=${FORT:-gfortran}
+env CC=$wct_cc CXX=$wct_cxx FC=wct_fort \
     ./wcb configure \
     --with-tbb=no \
     --with-jsoncpp="$JSONCPP_FQ_DIR" \
