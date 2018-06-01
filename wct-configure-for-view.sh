@@ -14,7 +14,7 @@ But, it may be run from anywhwere:
  - <path-to-install> :: optional location for installing WCT.  It
    defaults to installing into the view.
 
-Notee: A likely way to create a "view" directory is with Spack:
+Note: A likely way to create a "view" directory is with Spack:
 
   spack view add -i /opt/spack/views/wct-dev wirecell-toolkit
 

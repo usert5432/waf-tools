@@ -10,7 +10,7 @@ To include them into a custom =waf= command do something like:
 #+BEGIN_EXAMPLE
   $ git clone https://github.com/waf-project/waf.git
   $ cd waf/
-  $ ./waf-light --tools=compat15,doxygen,boost,bjam
+  $ ./waf-light --tools=doxygen,boost,bjam
 #+END_EXAMPLE
 
 *Warning* you must do the above outside of an otherwise Waf-controlled directory.

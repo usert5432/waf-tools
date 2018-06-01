@@ -1,19 +1,32 @@
-# Aggregate all the waftools to make the wscript shorter.
+# Aggregate all the waftools to make the main wscript a bit shorter.
+# Note, this is specific to WC building
 
-
+import generic
 import os.path as osp
 mydir = osp.dirname(__file__)
+
+## These are packages descriptions which fit the generic functions.
+package_descriptions = dict(
+    ## These typically CAN be found by pkg-config
+    ZLib    = dict(incs=['zlib.h'], libs=['z']),
+    FFTW    = dict(incs=['fftw3.h'], libs=['fftw3f'], pcname='fftw3f'),
+    JsonCpp = dict(incs=["json/json.h"], libs=['jsoncpp']),
+    ## These can't always be found by pkg-config:
+    Eigen   = dict(incs=["Eigen/Dense"]),
+    ## These likely can NOT be found by pkg-config:
+    Jsonnet = dict(incs=["libjsonnet++.h"], libs=['jsonnet++']),
+)
+
 
 def options(opt):
 
     # from here
     opt.load('smplpkgs',tooldir=mydir)
     opt.load('rootsys',tooldir=mydir)
-    opt.load('fftw',tooldir=mydir)
-    opt.load('eigen',tooldir=mydir)
-    opt.load('jsoncpp',tooldir=mydir)
-    opt.load('jsonnet',tooldir=mydir)
     opt.load('tbb',tooldir=mydir)
+
+    for name in package_descriptions:
+        generic._options(opt, name)
 
     opt.add_option('--build-debug', default='-O2 -ggdb3',
                    help="Build with debug symbols")
@@ -22,14 +35,13 @@ def configure(cfg):
     print 'Compile options: %s' % cfg.options.build_debug
 
     cfg.load('smplpkgs')
+
+    for name, args in package_descriptions.items():
+        generic._configure(cfg, name, **args)
+
     cfg.load('rootsys')
-    cfg.load('eigen')
-    cfg.load('jsoncpp')
-    cfg.load('jsonnet')
     cfg.load('tbb')
-    cfg.load('fftw')
+    # boost is assumed built in to main waf/wcb program via
+    # ./waf-light --tools=doxygen,boost,bjam
 
-
-
-    #print cfg.env
     
