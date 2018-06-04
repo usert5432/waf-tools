@@ -57,7 +57,7 @@ env CC=$wct_cc CXX=$wct_cxx FC=wct_fort \
     --with-tbb=no \
     --with-jsoncpp="$JSONCPP_FQ_DIR" \
     --with-jsonnet="$JSONNET_FQ_DIR" \
-    --with-eigen="$EIGEN_DIR" \
+    --with-eigen-include="$EIGEN_DIR/include/eigen3" \
     --with-root="$ROOT_FQ_DIR" \
     --with-fftw="$FFTW_FQ_DIR" \
     --with-fftw-include="$FFTW_INC" \
