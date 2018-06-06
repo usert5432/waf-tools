@@ -25,7 +25,7 @@ EOF
 }
 
 topdir=$(dirname $(dirname $(readlink -f $BASH_SOURCE)))
-inst="${1:-$topdir/install}"
+inst="${1:-$topdir/install-nix}"
 echo "Will 'wcb install' to $inst"
 
 if [ -z "$NIX_PATH" ] ; then
@@ -71,7 +71,7 @@ export CC=`which gcc`
 export CXX=`which g++`
 
 # needed to shut up eigen 3.2.10
-export CXXFLAGS='-Wno-misleading-indentation'
+export CXXFLAGS='-Wno-misleading-indentation -Wno-int-in-bool-context'
 
 "$topdir/wcb" \
     configure  \
