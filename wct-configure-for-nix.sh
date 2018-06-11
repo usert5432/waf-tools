@@ -71,7 +71,7 @@ export CC=`which gcc`
 export CXX=`which g++`
 
 # needed to shut up eigen 3.2.10
-export CXXFLAGS='-Wno-misleading-indentation -Wno-int-in-bool-context'
+export CXXFLAGS='-Wno-misleading-indentation -Wno-int-in-bool-context -Wvla'
 
 "$topdir/wcb" \
     configure  \
