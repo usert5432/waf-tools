@@ -15,6 +15,7 @@ package_descriptions = dict(
     Eigen   = dict(incs=["Eigen/Dense"]),
     ## These likely can NOT be found by pkg-config:
     Jsonnet = dict(incs=["libjsonnet++.h"], libs=['jsonnet++']),
+    TBB     = dict(incs=["tbb/parallel_for.h"], libs=['tbb']),
 )
 
 
@@ -23,7 +24,7 @@ def options(opt):
     # from here
     opt.load('smplpkgs',tooldir=mydir)
     opt.load('rootsys',tooldir=mydir)
-    opt.load('tbb',tooldir=mydir)
+    # opt.load('tbb',tooldir=mydir)
 
     for name in package_descriptions:
         generic._options(opt, name)
@@ -40,7 +41,7 @@ def configure(cfg):
         generic._configure(cfg, name, **args)
 
     cfg.load('rootsys')
-    cfg.load('tbb')
+    # cfg.load('tbb')
     # boost is assumed built in to main waf/wcb program via
     # ./waf-light --tools=doxygen,boost,bjam
 

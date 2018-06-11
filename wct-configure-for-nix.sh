@@ -55,7 +55,7 @@ assure_packages () {
         nix-env -i -E '_: with import <nixpkgs> {}; let newmeta = ( '$devpkg'.meta // { outputsToInstall = ["out" "dev"]; } ); in '$devpkg' // { meta = newmeta; }' || exit 1
         echo
     done
-    for pkg in gcc python jsonnet jsoncpp eigen root
+    for pkg in gcc python jsonnet jsoncpp eigen root tbb
     do
         echo "Assuring package: $pkg"
         echo
@@ -84,7 +84,7 @@ export CXXFLAGS='-Wno-misleading-indentation -Wno-int-in-bool-context'
     --boost-includes="$view/include" \
     --boost-libs="$view/lib" \
     --boost-mt \
-    --with-tbb=false \
+    --with-tbb=$view \
     --prefix="$inst"
 
 
