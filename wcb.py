@@ -15,7 +15,7 @@ package_descriptions = dict(
     Eigen   = dict(incs=["Eigen/Dense"]),
     ## These likely can NOT be found by pkg-config:
     Jsonnet = dict(incs=["libjsonnet++.h"], libs=['jsonnet++']),
-    TBB     = dict(incs=["tbb/parallel_for.h"], libs=['tbb']),
+    TBB     = dict(incs=["tbb/parallel_for.h"], libs=['tbb'], mandatory=False),
 )
 
 

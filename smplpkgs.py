@@ -33,6 +33,9 @@ def configure(cfg):
 
     cfg.env.append_unique('CXXFLAGS',['-std=c++11'])
 
+    cfg.find_program('python', var='PYTHON', mandatory=True)
+    cfg.find_program('bash', var='BASH', mandatory=True)
+
     pass
 
 def build(bld):
@@ -55,6 +58,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
     dictdir = bld.path.find_dir('dict')
 
     testsrc = bld.path.ant_glob('test/test_*.cxx')
+    test_scripts = bld.path.ant_glob('test/test_*.sh') + bld.path.ant_glob('test/test_*.py')
     appsdir = bld.path.find_dir('apps')
 
     if incdir:
@@ -112,18 +116,29 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
             export_includes = 'inc',
             use = use)            
 
-    if testsrc and not bld.options.no_tests:
+    if (testsrc or test_scripts) and not bld.options.no_tests:
         for test_main in testsrc:
             #print 'Building %s test: %s using %s' % (name, test_main, test_use)
             rpath = get_rpath(test_use + [name])
             #print rpath
             bld.program(features = 'test', 
                         source = [test_main], 
+                        ut_cwd   = bld.path, 
                         target = test_main.name.replace('.cxx',''),
                         install_path = None,
                         rpath = rpath,
                         includes = ['inc','test','tests'],
                         use = test_use + [name])
+        for test_script in test_scripts:
+            interp = "${BASH}"
+            if test_script.abspath().endswith(".py"):
+                interp = "${PYTHON}"
+            #print 'Building %s test %s script: %s using %s' % (name, interp, test_script, test_use)
+            bld(features="test_scripts",
+                ut_cwd   = bld.path, 
+                test_scripts_source = test_script,
+                test_scripts_template = "pwd && " + interp + " ${SCRIPT}")
+
     if appsdir:
         for app in appsdir.ant_glob('*.cxx'):
             #print 'Building %s app: %s using %s' % (name, app, app_use)
