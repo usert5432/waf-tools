@@ -75,16 +75,19 @@ export CXXFLAGS='-Wno-misleading-indentation -Wno-int-in-bool-context -Wvla'
 
 "$topdir/wcb" \
     configure  \
-    --with-jsonnet="$view" \
     --with-jsoncpp="$view" \
+    --with-jsonnet="$view" \
+    --with-eigen-include="$view/include/eigen3" \
     --with-fftw="$view" \
     --with-zlib="$view" \
-    --with-eigen-include="$view/include/eigen3" \
     --with-root="$view" \
     --boost-includes="$view/include" \
     --boost-libs="$view/lib" \
     --boost-mt \
     --with-tbb=$view \
     --prefix="$inst"
+
+
+#
 
 

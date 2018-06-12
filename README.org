@@ -20,6 +20,52 @@ To include them into a custom =waf= command do something like:
 
 The tools are introduced into your =wscript= in the usual way via the =load()= command.
 
+* Using the ~wcb~ tool
+
+
+The Waf tools used to build the WCT packages and to find the externals
+are all bundled up in the ~wcb~ tool (by which is meant [[./wcb.py]] and
+not the main ~wcb~ command line program discussed above).  It provides
+a mostly uniform interface to locating externals.  You may see this
+with:
+
+#+BEGIN_EXAMPLE
+  $ ./wcb --help
+#+END_EXAMPLE
+
+Packages can be included, excluded and located with the various
+~--with-NAME*~ flags.  The rules work as follows:
+
+1) If package is optional:
+
+  - omitting all ~--with-NAME*~ options will omit use the package
+
+  - explicitly using ~--with-NAME=false~ (or "~no~" or "~off~") will omit
+    use of the package.
+
+2) If package is mandatory:
+
+  - omitting all ~--with-NAME*~ options will use ~pkg-config~ to find the
+    package.
+
+  - explicitly using ~--with-NAME=false~ (or "~no~" or "~off~") will
+      assert.
+
+3) In either case:
+
+  - explicitly using ~--with-NAME=true~ (or "~yes~" or "~on~") will use
+    pkg-config to find the package.
+
+  - using ~--with-NAME*! with a path will attempt to locate the package
+    without using ~pkg-config~.
+
+
+Note: depending on how you have installed the external packages,
+~pkg-config~ may fail to find packages.  Using explicit ~--with-NAME*~
+flags is universally more likely to succeed.
+
+
+
 * Using the =smplpkgs= tool to build suites of packages
 
 The =smplpkgs= tool included in =waf-tools= provides a simple way to

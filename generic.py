@@ -8,11 +8,31 @@ There's probably a wafier way to do this.
 The interpretation of options are very specific so don't change them
 unless you really know all the use cases.  The rules are:
 
-1) Give no --with-NAME* or --with-NAME=yes then try to use pkg-config
-2) Give --with-NAME=no then do NOT use it, this may fail package is mandatory
-3) Give --with-NAME=/path use it as default path for inc/lib
-4) Give any --with-NAME-{include,lib} then do NOT use pkg-config and use it to locate inc/lib
+If package is optional:
 
+    - omitting all --with-NAME* options will omit use the package
+
+    - explicitly using --with-NAME=false (or "no" or "off") will omit
+      use of the package.
+
+If package is mandatory:
+
+    - omitting all --with-NAME* options will use pkg-config to find
+      the package.
+
+    - explicitly using --with-NAME=false (or "no" or "off") will
+      assert.
+
+In either case:
+
+    - explicitly using --with-NAME=true (or "yes" or "on") will use
+      pkg-config to find the package.
+
+    - using --with-NAME* with a path will attempt to locate the
+      package without using pkg-config
+
+Note, actually, pgk-config fails often to do its job.  Best to always
+use explicit --with-NAME.
 '''
 
 import os.path as osp
@@ -37,9 +57,15 @@ def _configure(ctx, name, incs=(), libs=(), pcname=None, mandatory=True):
     inc = getattr(ctx.options, 'with_%s_include'%lower, None)
     lib = getattr(ctx.options, 'with_%s_lib'%lower, None)
 
-    if inst and inst.lower() in ['no','off','false']:
-        assert(not mandatory)
-        return
+    if mandatory:
+        if inst:
+            assert (inst.lower() not in ['no','off','false'])
+    else:                       # optional
+        if not any([inst, inc, lib]):
+            return
+        if inst and inst.lower() in ['no','off','false']:
+            return
+
 
     # rely on package config
     if not any([inst,inc,lib]) or (inst and inst.lower() in ['yes','on','true']):
@@ -49,8 +75,10 @@ def _configure(ctx, name, incs=(), libs=(), pcname=None, mandatory=True):
             args += " --libs"
         ctx.check_cfg(package=pcname,  uselib_store=UPPER,
                       args=args, mandatory=mandatory)
-        ctx.end_msg(["failed","found"][getattr(ctx.env, 'HAVE_' + UPPER, None)])
-
+        if 'HAVE_'+UPPER in ctx.env:
+            ctx.end_msg("found")
+        else:
+            ctx.end_msg("failed")
     else:                       # do manual setting
 
         if incs:
