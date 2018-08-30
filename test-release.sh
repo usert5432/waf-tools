@@ -74,9 +74,10 @@ function configure-source
           --boost-includes=$externals/include \
           --boost-libs=$externals/lib \
           --boost-mt \
-          --with-eigen=$externals \
+          --with-eigen-include=$externals/include/eigen3 \
           --with-jsoncpp=$externals \
 	  --with-jsonnet=$externals \
+          --with-zlib=$externals \
           --with-tbb=no \
           --with-fftw=$externals \
           --with-root=$externals
