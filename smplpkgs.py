@@ -31,7 +31,7 @@ def configure(cfg):
     cfg.load('compiler_cxx')
     cfg.load('waf_unit_test')
 
-    cfg.env.append_unique('CXXFLAGS',['-std=c++11'])
+    cfg.env.append_unique('CXXFLAGS',['-std=c++17'])
 
     cfg.find_program('python', var='PYTHON', mandatory=True)
     cfg.find_program('bash', var='BASH', mandatory=True)
