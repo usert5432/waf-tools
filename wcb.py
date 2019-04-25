@@ -43,7 +43,10 @@ def configure(cfg):
     for name, args in package_descriptions.items():
         generic._configure(cfg, name, **args)
 
-    cfg.load('rootsys')
+    if cfg.options.with_root is False:
+        print ("sans ROOT")
+    else:
+        cfg.load('rootsys')
     # cfg.load('tbb')
     # boost is assumed built in to main waf/wcb program via
     # ./waf-light --tools=doxygen,boost,bjam
