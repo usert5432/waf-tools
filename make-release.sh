@@ -224,6 +224,38 @@ function push-everything
     goback
 }
 
+function tarball
+{
+    local branch=${1?must give branch} ; shift
+    local tag=${1?must give tag} ; shift
+    local base=${1:-wire-cell-toolkit} ; shift
+    local name="${base}-${tag}"
+    local tarfile="${name}.tar.gz"
+
+    if [ -f "$tarfile" ] ; then
+        echo "target tarball file exists, remove to continue: $tarfile"
+        return
+    fi
+    if [ -f "$name" ] ; then
+        echo "target directory exists, remove to continue: $name"
+        return;
+    fi
+
+    git clone --recurse-submodules --branch=$branch \
+        git@github.com:WireCell/wire-cell-build.git \
+        $name
+
+    cd $name
+    git checkout $tag
+    git submodule init
+    git submodule update
+    cd ..
+
+    tar --exclude=.git* -czf $tarfile $name
+
+    echo "when happy:"
+    echo "cp $tarfile /var/www/lar/software/releases"
+}
 
 
 "$@"
