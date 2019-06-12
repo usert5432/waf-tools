@@ -36,7 +36,7 @@ def options(opt):
                    help="Build with debug symbols")
 
 def configure(cfg):
-    print 'Compile options: %s' % cfg.options.build_debug
+    print ('Compile options: %s' % cfg.options.build_debug)
 
     cfg.load('smplpkgs')
 

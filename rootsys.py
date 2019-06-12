@@ -14,7 +14,7 @@ def options(opt):
     return
 
 @conf
-def check_root(cfg, mandatory=True):
+def check_root(cfg, mandatory=False):
     instdir = cfg.options.with_root
 
     if instdir and instdir.lower() in ['no','off','false']:
@@ -30,7 +30,7 @@ def check_root(cfg, mandatory=True):
     kwargs = dict(path_list=path_list)
 
 
-    cfg.find_program('root-config', var='ROOT-CONFIG', **kwargs)
+    cfg.find_program('root-config', var='ROOT-CONFIG', mandatory=mandatory, **kwargs)
     cfg.check_cfg(path=cfg.env['ROOT-CONFIG'], uselib_store='ROOTSYS',
                   args = '--cflags --libs --ldflags', package='', mandatory=mandatory)
     cfg.env.LIB_ROOTSYS += ['Minuit2','TreePlayer', 'EG']
