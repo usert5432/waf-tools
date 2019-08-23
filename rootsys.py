@@ -31,6 +31,12 @@ def check_root(cfg, mandatory=False):
 
 
     cfg.find_program('root-config', var='ROOT-CONFIG', mandatory=mandatory, **kwargs)
+    if not 'ROOT-CONFIG' in cfg.env:
+        if mandatory:
+            raise RuntimeError("root-config not found but required")
+        print ("skipping non mandatory ROOT, use --with-root to force")
+        return
+
     cfg.check_cfg(path=cfg.env['ROOT-CONFIG'], uselib_store='ROOTSYS',
                   args = '--cflags --libs --ldflags', package='', mandatory=mandatory)
     cfg.env.LIB_ROOTSYS += ['Minuit2','TreePlayer', 'EG']

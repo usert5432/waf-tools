@@ -56,16 +56,17 @@ def _configure(ctx, name, incs=(), libs=(), pcname=None, mandatory=True):
     inst = getattr(ctx.options, 'with_'+lower, None)
     inc = getattr(ctx.options, 'with_%s_include'%lower, None)
     lib = getattr(ctx.options, 'with_%s_lib'%lower, None)
+    #print ("CONFIGURE", name, inst,inc,lib, mandatory)
 
     if mandatory:
         if inst:
             assert (inst.lower() not in ['no','off','false'])
     else:                       # optional
         if not any([inst, inc, lib]):
+            print ("skipping non mandatory %s, use --with-%s to force" % (name, lower))
             return
         if inst and inst.lower() in ['no','off','false']:
             return
-
 
     # rely on package config
     if not any([inst,inc,lib]) or (inst and inst.lower() in ['yes','on','true']):
