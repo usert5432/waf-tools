@@ -32,7 +32,7 @@ In either case:
       package without using pkg-config
 
 Note, actually, pgk-config fails often to do its job.  Best to always
-use explicit --with-NAME.
+use explicit --with-NAME=[<bool>|<dir>].
 '''
 
 import os.path as osp
@@ -63,7 +63,7 @@ def _configure(ctx, name, incs=(), libs=(), pcname=None, mandatory=True):
             assert (inst.lower() not in ['no','off','false'])
     else:                       # optional
         if not any([inst, inc, lib]):
-            print ("skipping non mandatory %s, use --with-%s to force" % (name, lower))
+            print ("skipping non mandatory %s, use --with-%s=[yes|<dir>] to force" % (name, lower))
             return
         if inst and inst.lower() in ['no','off','false']:
             return

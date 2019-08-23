@@ -15,7 +15,7 @@ package_descriptions = dict(
     ## These can't always be found by pkg-config:
     Eigen   = dict(incs=["Eigen/Dense"]),
     ## These likely can NOT be found by pkg-config:
-    Jsonnet = dict(incs=["libjsonnet++.h"], libs=['jsonnet++']),
+    Jsonnet = dict(incs=["libjsonnet++.h"], libs=['jsonnet++','jsonnet']),
     TBB     = dict(incs=["tbb/parallel_for.h"], libs=['tbb'], mandatory=False),
 
     # note, actually, pgk-config fails often.  best to always use
