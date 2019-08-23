@@ -71,6 +71,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
 
     if srcdir:
         source += srcdir.ant_glob('*.cxx')
+        source += srcdir.ant_glob('*.cu') # cuda
 
     # fixme: I should move this out of here.
     # root dictionary

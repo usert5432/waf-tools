@@ -8,7 +8,6 @@ mydir = osp.dirname(__file__)
 ## These are packages descriptions which fit the generic functions.
 package_descriptions = dict(
     ## These typically CAN be found by pkg-config
-    CUDA    = dict(incs=["cuda.h"], libs=["cuda"], mandatory=False),
     ZLib    = dict(incs=['zlib.h'], libs=['z']),
     FFTW    = dict(incs=['fftw3.h'], libs=['fftw3f'], pcname='fftw3f'),
     JsonCpp = dict(incs=["json/json.h"], libs=['jsoncpp']),
@@ -28,6 +27,7 @@ def options(opt):
     # from here
     opt.load('smplpkgs',tooldir=mydir)
     opt.load('rootsys',tooldir=mydir)
+    opt.load('cuda',tooldir=mydir)
     # opt.load('tbb',tooldir=mydir)
 
     for name in package_descriptions:
@@ -45,6 +45,11 @@ def configure(cfg):
         #print ("Configure: %s %s" % (name, args))
         generic._configure(cfg, name, **args)
         #print ("configured %s" % name)
+
+    if cfg.options.with_cuda is False:
+        print ("sans CUDA")
+    else:
+        cfg.load('cuda')
 
     if cfg.options.with_root is False:
         print ("sans ROOT")

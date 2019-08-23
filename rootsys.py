@@ -42,8 +42,8 @@ def check_root(cfg, mandatory=False):
     cfg.env.LIB_ROOTSYS += ['Minuit2','TreePlayer', 'EG']
 
     cfg.find_program('rootcling', var='ROOTCLING', path_list=path_list, mandatory=mandatory)
-    cfg.find_program('rootcint', var='ROOTCINT', path_list=path_list, mandatory=mandatory)
-    cfg.find_program('rlibmap', var='RLIBMAP', path_list=path_list, mandatory=False)
+    # cfg.find_program('rootcint', var='ROOTCINT', path_list=path_list, mandatory=mandatory)
+    # cfg.find_program('rlibmap', var='RLIBMAP', path_list=path_list, mandatory=False)
 
     cfg.check_cxx(header_name="Rtypes.h", use='ROOTSYS',
                   mandatory=mandatory)
