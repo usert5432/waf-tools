@@ -3,6 +3,8 @@
 
 import generic
 import os.path as osp
+from waflib.Utils import to_list
+
 mydir = osp.dirname(__file__)
 
 ## These are packages descriptions which fit the generic functions.
@@ -33,17 +35,24 @@ def options(opt):
 
     # from here
     opt.load('boost')
-    opt.load('smplpkgs',tooldir=mydir)
-    opt.load('rootsys',tooldir=mydir)
-    opt.load('cuda',tooldir=mydir)
-    opt.load('protobuf',tooldir=mydir)
-    # opt.load('tbb',tooldir=mydir)
+    opt.load('smplpkgs')
+    opt.load('rootsys')
+    opt.load('cuda')
+    opt.load('protobuf')
 
     for name in package_descriptions:
         generic._options(opt, name)
 
     opt.add_option('--build-debug', default='-O2 -ggdb3',
                    help="Build with debug symbols")
+
+def find_submodules(ctx):
+    sms = list()
+    for wb in ctx.path.ant_glob("**/wscript_build"):
+        sms.append(wb.parent.name)
+    sms.sort()
+    return sms
+
 
 def configure(cfg):
     print ('Compile options: %s' % cfg.options.build_debug)
@@ -72,8 +81,45 @@ def configure(cfg):
         cfg.load('protobuf')
 
 
-    # cfg.load('tbb')
-    # boost is assumed built in to main waf/wcb program via
-    # ./waf-light --tools=doxygen,boost,bjam
 
+    cfg.check_boost(lib='system filesystem graph thread program_options iostreams regex')
+
+    cfg.check(header_name="dlfcn.h", uselib_store='DYNAMO',
+              lib=['dl'], mandatory=True)
+
+    cfg.check(features='cxx cxxprogram', lib=['pthread'], uselib_store='PTHREAD')
+
+
+    cfg.env.CXXFLAGS += to_list(cfg.options.build_debug)
+    cfg.env.CXXFLAGS += ['-DEIGEN_FFTW_DEFAULT=1']
+
+    cfg.env.LIB += ['z']
     
+    submodules = find_submodules(cfg)
+
+    # submodules = 'util iface gen sigproc img pgraph apps sio dfp tbb ress cfg root'.split()
+    # submodules.sort()
+    # submodules = [sm for sm in submodules if osp.isdir(sm)]
+
+    if 'BOOST_PIPELINE=1' not in cfg.env.DEFINES and 'dfp' in submodules:
+        print ('Removing submodule "dfp" due to lack of external')
+        submodules.remove('dfp')
+
+    # Remove WCT packages that happen to have same name as external name
+    for pkg,ext in [("root","ROOTSYS"), ("tbb","TBB"), ("tbb","FFTWTHREADS_LIB"), ("cuda","CUDA"), ("hio", "H5CPP_ALL")]:
+        have='HAVE_'+ext
+        if have in cfg.env or have in cfg.env.define_key:
+            continue
+        if pkg in submodules:
+            print ('Removing package "%s" due to lack of external dependency "%s"'%(pkg,ext))
+            submodules.remove(pkg)
+
+    cfg.env.SUBDIRS = submodules
+    print ('Configured for submodules: %s' % (', '.join(submodules), ))
+    cfg.write_config_header('config.h')
+
+
+def build(bld):
+    subdirs = bld.env.SUBDIRS
+    print ('Building: %s' % (', '.join(subdirs), ))
+    bld.recurse(subdirs)
