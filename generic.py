@@ -35,6 +35,7 @@ Note, actually, pgk-config fails often to do its job.  Best to always
 use explicit --with-NAME=[<bool>|<dir>].
 '''
 
+import sys
 import os.path as osp
 def _options(opt, name):
     lower = name.lower()
@@ -47,11 +48,12 @@ def _options(opt, name):
                    help="give %s lib installation location"%name)
     return
 
-def _configure(ctx, name, incs=(), libs=(), bins=(), pcname=None, mandatory=True):
+def _configure(ctx, name, incs=(), libs=(), bins=(), pcname=None, mandatory=True, extuses=()):
     lower = name.lower()
     UPPER = name.upper()
     if pcname is None:
         pcname = lower
+    extuses = list(extuses)
 
     instdir = getattr(ctx.options, 'with_'+lower, None)
     incdir = getattr(ctx.options, 'with_%s_include'%lower, None)
@@ -109,7 +111,7 @@ def _configure(ctx, name, incs=(), libs=(), bins=(), pcname=None, mandatory=True
         ctx.start_msg("Location for %s libs" % (name,))
         for tryl in libs:
             ctx.check_cxx(lib=tryl,
-                          use=UPPER, uselib_store=UPPER, mandatory=mandatory)
+                          use=[UPPER] + extuses, uselib_store=UPPER, mandatory=mandatory)
         ctx.end_msg(str(getattr(ctx.env, 'LIBPATH_' + UPPER, None)))
 
         ctx.start_msg("Libs for %s" % name)
@@ -125,7 +127,7 @@ def _configure(ctx, name, incs=(), libs=(), bins=(), pcname=None, mandatory=True
         ctx.start_msg("Location for %s headers" % name)
         for tryh in incs:
             ctx.check_cxx(header_name=tryh,
-                          use=UPPER, uselib_store=UPPER, mandatory=mandatory)
+                          use=[UPPER] + extuses, uselib_store=UPPER, mandatory=mandatory)
         ctx.end_msg(str(getattr(ctx.env, 'INCLUDES_' + UPPER, None)))
 
     if bins:

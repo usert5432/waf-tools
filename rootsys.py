@@ -41,7 +41,7 @@ def check_root(cfg, mandatory=False):
 
     cfg.check_cfg(path=cfg.env['ROOT-CONFIG'], uselib_store='ROOTSYS',
                   args = '--cflags --libs --ldflags', package='', mandatory=mandatory)
-    cfg.env.LIB_ROOTSYS += ['Minuit2','TreePlayer', 'EG']
+
 
     cfg.find_program('rootcling', var='ROOTCLING', path_list=path_list, mandatory=mandatory)
     # cfg.find_program('rootcint', var='ROOTCINT', path_list=path_list, mandatory=mandatory)

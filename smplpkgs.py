@@ -90,6 +90,12 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
         else:
             warn('No ROOT dictionary will be generated for "%s" unless "ROOTSYS" added to "use"' % name)
 
+    if hasattr(bld.env, "PROTOC"):
+        pbs = bld.path.ant_glob('**/*.proto')
+        # if ("zpb" in name.lower()):
+        #     print ("protobufs: %s" % (pbs,))
+        source += pbs
+
     def get_rpath(uselst, local=True):
         ret = set([bld.env["PREFIX"]+"/lib"])
         for one in uselst:
@@ -107,15 +113,19 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
         return ret
 
     # the library
-    if incdir and srcdir:
-        #print "Building library: %s using %s"%(name, use)
+    if srcdir:
+        if ("zpb" in name.lower()):
+            print ("Building library: %s, using %s, source: %s"%(name, use, source))
+        ei = ''
+        if incdir:
+            ei = 'inc' 
         bld(features = 'cxx cxxshlib',
             name = name,
             source = source,
             target = name,
             rpath = get_rpath(use),
             includes = includes, # 'inc',
-            export_includes = 'inc',
+            export_includes = ei,
             use = use)            
 
     if appsdir:
