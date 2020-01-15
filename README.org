@@ -13,7 +13,7 @@ recreate ~wcb~ follow this recipe:
   $ git clone https://github.com/WireCell/waf-tools.git
   $ WTEXTRA=$(echo $(pwd)/waf-tools/*.py | tr ' ' ,)
 
-  $ git clone https://github.com/waf-project/waf.git
+  $ git clone https://gitlab.com/ita1024/waf.git
   $ cd waf/
   $ ./waf-light --tools=doxygen,boost,bjam,$WTEXTRA
   ...
