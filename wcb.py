@@ -1,7 +1,7 @@
 # Aggregate all the waftools to make the main wscript a bit shorter.
 # Note, this is specific to WC building
 
-import generic
+from . import generic
 import os.path as osp
 from waflib.Utils import to_list
 
@@ -21,10 +21,13 @@ package_descriptions = dict(
     TBB     = dict(incs=["tbb/parallel_for.h"], libs=['tbb'], mandatory=False),
     HDF5    = dict(incs=["hdf5.h"], libs=['hdf5'], mandatory=False),
     H5CPP   = dict(incs=["h5cpp/all"], mandatory=False),
-    ZMQ     = dict(incs=["zmq.h"], libs=['zmq'], pcname='libzmq', mandatory=False),
-    CZMQ    = dict(incs=["czmq.h"], libs=['czmq'], pcname='libczmq', mandatory=False),
-    ZYRE    = dict(incs=["zyre.h"], libs=['zyre'], mandatory=False),
-    ZIO     = dict(incs=["zio/node.hpp"], libs=['zio'], mandatory=False, extuses=("ZYRE","CZMQ","ZMQ")),
+    ### these are not yet used by wire-cell-toolkit/master
+    # ZMQ     = dict(incs=["zmq.h"], libs=['zmq'], pcname='libzmq', mandatory=False),
+    # CZMQ    = dict(incs=["czmq.h"], libs=['czmq'], pcname='libczmq', mandatory=False),
+    # ZYRE    = dict(incs=["zyre.h"], libs=['zyre'], mandatory=False),
+    # ZIO     = dict(incs=["zio/node.hpp"], libs=['zio'], mandatory=False, extuses=("ZYRE","CZMQ","ZMQ")),
+
+    # note, one may extend this dictionary in the top "wscript"
 
     # note, actually, pgk-config fails often.  best to always use
     # explicit --with-NAME.
@@ -38,7 +41,7 @@ def options(opt):
     opt.load('smplpkgs')
     opt.load('rootsys')
     opt.load('cuda')
-    opt.load('protobuf')
+    #opt.load('protobuf')
 
     for name in package_descriptions:
         generic._options(opt, name)
@@ -65,20 +68,21 @@ def configure(cfg):
         generic._configure(cfg, name, **args)
         #print ("configured %s" % name)
 
-    if cfg.options.with_cuda is False:
+    if getattr(cfg.options, "with_cuda", False) is False:
         print ("sans CUDA")
     else:
         cfg.load('cuda')
 
-    if cfg.options.with_root is False:
+    if getattr(cfg.options, "with_root", False) is False:
         print ("sans ROOT")
     else:
         cfg.load('rootsys')
 
-    if cfg.options.with_protobuf is False:
-        print ("sans protobuf")
-    else:
-        cfg.load('protobuf')
+    ### not yet used
+    # if cfg.options.with_protobuf is False:
+    #     print ("sans protobuf")
+    # else:
+    #     cfg.load('protobuf')
 
 
 
@@ -105,14 +109,23 @@ def configure(cfg):
         print ('Removing submodule "dfp" due to lack of external')
         submodules.remove('dfp')
 
-    # Remove WCT packages that happen to have same name as external name
-    for pkg,ext in [("root","ROOTSYS"), ("tbb","TBB"), ("tbb","FFTWTHREADS_LIB"), ("cuda","CUDA"), ("hio", "H5CPP_ALL")]:
-        have='HAVE_'+ext
-        if have in cfg.env or have in cfg.env.define_key:
-            continue
-        if pkg in submodules:
-            print ('Removing package "%s" due to lack of external dependency "%s"'%(pkg,ext))
-            submodules.remove(pkg)
+    # Remove WCT packages if they an optional dependency wasn't found
+    for pkg,ext in [
+            ("root","ROOTSYS"),
+            ("tbb","TBB"),
+            ("tbb","FFTWTHREADS_LIB"),
+            ("cuda","CUDA"),
+            ("hio", "H5CPP_ALL"),
+            #("zpb", "ZIO ZMQ CZMQ ZYRE PROTOBUF")
+    ]:
+        exts = to_list(ext)
+        for ext in exts:
+            have='HAVE_'+ext
+            if have in cfg.env or have in cfg.env.define_key:
+                continue
+            if pkg in submodules:
+                print ('Removing package "%s" due to lack of external dependency "%s"'%(pkg,ext))
+                submodules.remove(pkg)
 
     cfg.env.SUBDIRS = submodules
     print ('Configured for submodules: %s' % (', '.join(submodules), ))
