@@ -4,14 +4,19 @@
 # Wire Cell Toolkit.  Normally only developers exercise it.  
 
 output="$(pwd)/wcb"
-wafurl="https://github.com/waf-project/waf.git"
+wafurl="https://gitlab.com/ita1024/waf.git"
 wafdir="$(pwd)/waf"
-waftag="waf-1.9.7"
+waftag="waf-2.0.19"
+
 
 toolsurl="https://github.com/WireCell/waf-tools.git"
 tooldir="$(pwd)"
+# initial defaults from waf
+tools="doxygen boost bjam"
+# add any in cwd, assuming we are sitting in waf-tools
+tools="$tools $(echo *.py| sed 's/.py//g')"
 
-tools="doxygen boost bjam fftw eigen tbb rootsys jsoncpp smplpkgs"
+
 
 usage () {
     echo "refresh-wcb [options] [tools]"

@@ -6,8 +6,13 @@ program called ~wcb~, the Wire-Cell Builder.
 
 * Packing 
 
-The ~wcb~ command is a packed version of waf with extra tools.  To
-recreate ~wcb~ follow this recipe:
+The ~wcb~ command is a packed version of waf with extra tools.  A script is provided to automate rebuilding ~wcb~:
+
+#+begin_example
+  $ ./refresh-wcb -o /path/to/your/wire-cell-toolkit/wcb
+#+end_example
+
+This script essentially enacts this recipe:
 
 #+BEGIN_EXAMPLE
   $ git clone https://github.com/WireCell/waf-tools.git
