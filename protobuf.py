@@ -53,4 +53,4 @@ def configure(cfg):
     generic._configure(cfg, 'protobuf',
                        incs=('google/protobuf/message.h',), libs=('protobuf',),
                        mandatory=False)
-    cfg.find_program('protoc', var='PROTOC')
+    cfg.find_program('protoc', var='PROTOC', mandatory=False)
