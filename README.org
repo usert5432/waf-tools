@@ -12,7 +12,21 @@ The ~wcb~ command is a packed version of waf with extra tools.  A script is prov
   $ ./refresh-wcb -o /path/to/your/wire-cell-toolkit/wcb
 #+end_example
 
-This script essentially enacts this recipe:
+When WCT is updated it's a good idea to tag ~waf-tools~.  Example session:
+
+#+begin_example
+  $ cd /path/to/your/waf-tools
+  $ ./refresh-wcb -o /path/to/your/wire-cell-toolkit/wcb
+  $ cd /path/to/your/wire-cell-toolkit
+  (...test...)
+  $ git commit -am "Refresh to wcb X.Y.Z" && git push
+  $ cd /path/to/your/waf-tools
+  $ git tag -am "...useful message..." X.Y.Z
+  $ git push --tags
+#+end_example
+
+
+Th refresh script essentially enacts this recipe:
 
 #+BEGIN_EXAMPLE
   $ git clone https://github.com/WireCell/waf-tools.git
@@ -25,7 +39,7 @@ This script essentially enacts this recipe:
   adding /home/bv/dev/waf-tools/smplpkgs.py as waflib/extras/smplpkgs.py
   adding /home/bv/dev/waf-tools/wcb.py as waflib/extras/wcb.py
   ...
-  $ cp waf /path/to/wire-cell-toolkit/wcb
+  $ cp waf /path/to/your/wire-cell-toolkit/wcb
 #+END_EXAMPLE
 
 * Using the ~wcb~ tool
