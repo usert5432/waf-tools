@@ -21,7 +21,7 @@ package_descriptions = dict(
     TBB     = dict(incs=["tbb/parallel_for.h"], libs=['tbb'], mandatory=False),
     HDF5    = dict(incs=["hdf5.h"], libs=['hdf5'], mandatory=False),
     H5CPP   = dict(incs=["h5cpp/all"], mandatory=False),
-    LibTorch= dict(incs=["torch/script.h"], libs=['torch'], mandatory=False),
+    LibTorch= dict(incs=["torch/script.h"], libs=['torch', 'c10'], mandatory=False),
     ### these are not yet used by wire-cell-toolkit/master
     # ZMQ     = dict(incs=["zmq.h"], libs=['zmq'], pcname='libzmq', mandatory=False),
     # CZMQ    = dict(incs=["czmq.h"], libs=['czmq'], pcname='libczmq', mandatory=False),
