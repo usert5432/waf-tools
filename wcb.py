@@ -21,6 +21,7 @@ package_descriptions = dict(
     TBB     = dict(incs=["tbb/parallel_for.h"], libs=['tbb'], mandatory=False),
     HDF5    = dict(incs=["hdf5.h"], libs=['hdf5'], mandatory=False),
     H5CPP   = dict(incs=["h5cpp/all"], mandatory=False),
+    LibTorch= dict(incs=["torch/script.h"], libs=['torch', 'c10'], mandatory=False),
     ### these are not yet used by wire-cell-toolkit/master
     # ZMQ     = dict(incs=["zmq.h"], libs=['zmq'], pcname='libzmq', mandatory=False),
     # CZMQ    = dict(incs=["czmq.h"], libs=['czmq'], pcname='libczmq', mandatory=False),
@@ -116,6 +117,7 @@ def configure(cfg):
             ("tbb","FFTWTHREADS_LIB"),
             ("cuda","CUDA"),
             ("hio", "H5CPP_ALL"),
+            ("pytorch", "LIBTORCH"),
             #("zpb", "ZIO ZMQ CZMQ ZYRE PROTOBUF")
     ]:
         exts = to_list(ext)
@@ -136,3 +138,10 @@ def build(bld):
     subdirs = bld.env.SUBDIRS
     print ('Building: %s' % (', '.join(subdirs), ))
     bld.recurse(subdirs)
+
+    # fixme: this writes directly.  Should make it a task, including
+    # running graphviz to produce PNG/PDF
+    print ("writing wct-depos.dot")
+    bld.path.make_node("wct-deps.dot").write(str(bld.smplpkg_graph))
+
+

@@ -20,6 +20,46 @@ from waflib.Configure import conf
 import waflib.Context
 from waflib.Logs import debug, info, error, warn
 
+class SimpleGraph(object):
+    colors = dict(lib='black', app='blue', tst='gray')
+    def __init__(self):
+        self._nodes = dict()
+        self._edges = dict()
+
+    def __str__(self):
+        lines = ['digraph deps {']
+        for node,attrs in self._nodes.items():
+            lines.append('\t"%s";' % node)
+
+        for edge, attrs in self._edges.items():
+            for cat in attrs:
+                # print (edge, cat, self.colors[cat])
+                lines.append('\t"%s" -> "%s"[color="%s"];' % \
+                             (edge[0], edge[1], self.colors[cat]))
+        lines.append('}')
+        return '\n'.join(lines)
+
+    def register(self, pkg, **kwds):
+        # print ("register %s" % pkg)
+        self.add_node(pkg)
+        for cat, deps in kwds.items():
+            kwds = {cat: True}
+            for other in deps:
+                self.add_edge((pkg, other), **kwds)
+        
+    def add_node(self, name, **kwds):
+        if name in self._nodes:
+            self._nodes[name].update(kwds)
+        else:
+            self._nodes[name] = kwds
+    def add_edge(self, edge, **kwds):
+        if edge in self._edges:
+            self._edges[edge].update(kwds)
+        else:
+            self._edges[edge] = kwds
+            
+        
+
 _tooldir = osp.dirname(osp.abspath(__file__))
 
 def options(opt):
@@ -44,9 +84,19 @@ def build(bld):
 
 @conf
 def smplpkg(bld, name, use='', app_use='', test_use=''):
+    if not hasattr(bld, 'smplpkg_graph'):
+        #print ("Make SimpleGraph")
+        bld.smplpkg_graph = SimpleGraph()
+    bld.smplpkg_graph.register(
+        name,
+        lib=set(to_list(use)),
+        app=set(to_list(app_use)),
+        tst=set(to_list(test_use)))
+
     use = list(set(to_list(use)))
     app_use = list(set(use + to_list(app_use)))
     test_use = list(set(use + to_list(test_use)))
+
 
     includes = [bld.out_dir]
     headers = []
