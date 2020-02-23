@@ -34,8 +34,11 @@ class SimpleGraph(object):
         for edge, attrs in self._edges.items():
             for cat in attrs:
                 # print (edge, cat, self.colors[cat])
-                lines.append('\t"%s" -> "%s"[color="%s"];' % \
-                             (edge[0], edge[1], self.colors[cat]))
+                extra = ""
+                if cat == "tst":
+                    extra=',constraint=false'
+                lines.append('\t"%s" -> "%s"[color="%s"%s];' % \
+                             (edge[0], edge[1], self.colors[cat], extra))
         lines.append('}')
         return '\n'.join(lines)
 
