@@ -138,3 +138,10 @@ def build(bld):
     subdirs = bld.env.SUBDIRS
     print ('Building: %s' % (', '.join(subdirs), ))
     bld.recurse(subdirs)
+
+    # fixme: this writes directly.  Should make it a task, including
+    # running graphviz to produce PNG/PDF
+    print ("writing wct-depos.dot")
+    bld.path.make_node("wct-deps.dot").write(str(bld.smplpkg_graph))
+
+
