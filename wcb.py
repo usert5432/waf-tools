@@ -112,21 +112,20 @@ def configure(cfg):
 
     # Remove WCT packages if they an optional dependency wasn't found
     for pkg,ext in [
-            ("root","ROOTSYS"),
-            ("tbb","TBB"),
-            ("tbb","FFTWTHREADS_LIB"),
-            ("cuda","CUDA"),
-            ("hio", "H5CPP_ALL"),
-            ("pytorch", "LIBTORCH"),
+            ("root","HAVE_ROOTSYS"),
+            ("tbb","HAVE_TBB"),
+            ("tbb","LIB_FFTWTHREADS"),
+            ("cuda","HAVE_CUDA"),
+            ("hio", "INCLUDES_H5CPP"),
+            ("pytorch", "LIB_LIBTORCH"),
             #("zpb", "ZIO ZMQ CZMQ ZYRE PROTOBUF")
     ]:
         exts = to_list(ext)
-        for ext in exts:
-            have='HAVE_'+ext
+        for have in exts:
             if have in cfg.env or have in cfg.env.define_key:
                 continue
             if pkg in submodules:
-                print ('Removing package "%s" due to lack of external dependency "%s"'%(pkg,ext))
+                print ('Removing package "%s" due to lack of external dependency "%s"'%(pkg,have))
                 submodules.remove(pkg)
 
     cfg.env.SUBDIRS = submodules
