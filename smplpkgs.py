@@ -83,7 +83,7 @@ def configure(cfg):
 def build(bld):
     from waflib.Tools import waf_unit_test
     bld.add_post_fun(waf_unit_test.summary)
-
+    #print ("smplpkgs.build()")
 
 @conf
 def smplpkg(bld, name, use='', app_use='', test_use=''):
@@ -193,7 +193,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
 
     if (testsrc or test_scripts) and not bld.options.no_tests:
         for test_main in testsrc:
-            #print 'Building %s test: %s using %s' % (name, test_main, test_use)
+            #print 'Building %s test: %s' % (name, test_main)
             rpath = get_rpath(test_use + [name])
             #print rpath
             bld.program(features = 'test', 

@@ -134,6 +134,8 @@ def configure(cfg):
 
 
 def build(bld):
+    bld.load('smplpkgs')
+
     subdirs = bld.env.SUBDIRS
     print ('Building: %s' % (', '.join(subdirs), ))
     bld.recurse(subdirs)
