@@ -73,6 +73,7 @@ def options(opt):
 def configure(cfg):
     cfg.load('compiler_cxx')
     cfg.load('waf_unit_test')
+    cfg.load('rpathify')
 
     cfg.env.append_unique('CXXFLAGS',['-std=c++17'])
 
@@ -176,7 +177,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
             name = name,
             source = source,
             target = name,
-            rpath = get_rpath(use),
+            #rpath = get_rpath(use),
             includes = includes, # 'inc',
             export_includes = ei,
             use = use)            
@@ -187,7 +188,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
             bld.program(source = [app], 
                         target = app.name.replace('.cxx',''),
                         includes =  includes, # 'inc',
-                        rpath = get_rpath(app_use + [name], local=False),
+                        #rpath = get_rpath(app_use + [name], local=False),
                         use = app_use + [name])
 
 
@@ -201,7 +202,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
                         ut_cwd   = bld.path, 
                         target = test_main.name.replace('.cxx',''),
                         install_path = None,
-                        rpath = rpath,
+                        #rpath = rpath,
                         includes = ['inc','test','tests'],
                         use = test_use + [name])
         for test_script in test_scripts:

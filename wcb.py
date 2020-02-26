@@ -8,31 +8,28 @@ from waflib.Utils import to_list
 mydir = osp.dirname(__file__)
 
 ## These are packages descriptions which fit the generic functions.
-package_descriptions = dict(
+package_descriptions = [
     ## These typically CAN be found by pkg-config
-    ZLib    = dict(incs=['zlib.h'], libs=['z']),
-    FFTW    = dict(incs=['fftw3.h'], libs=['fftw3f'], pcname='fftw3f'),
-    FFTWThreads = dict(libs=['fftw3f_threads'], pcname='fftw3f', mandatory=False),
-    JsonCpp = dict(incs=["json/json.h"], libs=['jsoncpp']),
+    ('ZLib',     dict(incs=['zlib.h'], libs=['z'])),
+    ('FFTW',     dict(incs=['fftw3.h'], libs=['fftw3f'], pcname='fftw3f')),
+    ('FFTWThreads', dict(libs=['fftw3f_threads'], pcname='fftw3f', mandatory=False)),
+    ('JsonCpp',  dict(incs=["json/json.h"], libs=['jsoncpp'])),
     ## These can't always be found by pkg-config:
-    Eigen   = dict(incs=["Eigen/Dense"], pcname='eigen3'),
+    ('Eigen',    dict(incs=["Eigen/Dense"], pcname='eigen3')),
     ## These likely can NOT be found by pkg-config:
-    Jsonnet = dict(incs=["libjsonnet++.h"], libs=['jsonnet++','jsonnet']),
-    TBB     = dict(incs=["tbb/parallel_for.h"], libs=['tbb'], mandatory=False),
-    HDF5    = dict(incs=["hdf5.h"], libs=['hdf5'], mandatory=False),
-    H5CPP   = dict(incs=["h5cpp/all"], mandatory=False),
-    LibTorch= dict(incs=["torch/script.h"], libs=['torch', 'c10'], mandatory=False),
+    ('Jsonnet',  dict(incs=["libjsonnet++.h"], libs=['jsonnet++','jsonnet'])),
+    ('TBB',      dict(incs=["tbb/parallel_for.h"], libs=['tbb'], mandatory=False)),
+    ('HDF5',     dict(incs=["hdf5.h"], libs=['hdf5'], mandatory=False)),
+    ('H5CPP',    dict(incs=["h5cpp/all"], mandatory=False, extuses=('HDF5',))),
+    ('LibTorch', dict(incs=["torch/script.h"], libs=['torch', 'c10'], mandatory=False)),
     ### these are not yet used by wire-cell-toolkit/master
-    # ZMQ     = dict(incs=["zmq.h"], libs=['zmq'], pcname='libzmq', mandatory=False),
-    # CZMQ    = dict(incs=["czmq.h"], libs=['czmq'], pcname='libczmq', mandatory=False),
-    # ZYRE    = dict(incs=["zyre.h"], libs=['zyre'], mandatory=False),
-    # ZIO     = dict(incs=["zio/node.hpp"], libs=['zio'], mandatory=False, extuses=("ZYRE","CZMQ","ZMQ")),
+    # ('ZMQ',      dict(incs=["zmq.h"], libs=['zmq'], pcname='libzmq', mandatory=False)),
+    # ('CZMQ',     dict(incs=["czmq.h"], libs=['czmq'], pcname='libczmq', mandatory=False)),
+    # ('ZYRE',     dict(incs=["zyre.h"], libs=['zyre'], mandatory=False)),
+    # ('ZIO',      dict(incs=["zio/node.hpp"], libs=['zio'], mandatory=False, extuses=("ZYRE","CZMQ","ZMQ"))),
 
-    # note, one may extend this dictionary in the top "wscript"
-
-    # note, actually, pgk-config fails often.  best to always use
-    # explicit --with-NAME.
-)
+    # note, one may extend this list in the top "wscript"
+]
 
 
 def options(opt):
@@ -44,7 +41,7 @@ def options(opt):
     opt.load('cuda')
     #opt.load('protobuf')
 
-    for name in package_descriptions:
+    for name,desc in package_descriptions:
         generic._options(opt, name)
 
     opt.add_option('--build-debug', default='-O2 -ggdb3',
@@ -64,7 +61,7 @@ def configure(cfg):
     cfg.load('boost')
     cfg.load('smplpkgs')
 
-    for name, args in package_descriptions.items():
+    for name, args in package_descriptions:
         #print ("Configure: %s %s" % (name, args))
         generic._configure(cfg, name, **args)
         #print ("configured %s" % name)
@@ -86,13 +83,25 @@ def configure(cfg):
     #     cfg.load('protobuf')
 
 
+    def haveit(one):
+        one=one.upper()
+        if 'LIB_'+one in cfg.env:
+            cfg.env['HAVE_'+one] = 1
+            print('HAVE %s libs'%one)
+        else:
+            print('NO %s libs'%one)
+
+    # Check for stuff not found in the wcb-generic way
 
     cfg.check_boost(lib='system filesystem graph thread program_options iostreams regex')
+    haveit('boost')
 
     cfg.check(header_name="dlfcn.h", uselib_store='DYNAMO',
               lib=['dl'], mandatory=True)
+    haveit('dynamo')
 
     cfg.check(features='cxx cxxprogram', lib=['pthread'], uselib_store='PTHREAD')
+    haveit('pthread')
 
 
     cfg.env.CXXFLAGS += to_list(cfg.options.build_debug)
@@ -105,10 +114,6 @@ def configure(cfg):
     # submodules = 'util iface gen sigproc img pgraph apps sio dfp tbb ress cfg root'.split()
     # submodules.sort()
     # submodules = [sm for sm in submodules if osp.isdir(sm)]
-
-    if 'BOOST_PIPELINE=1' not in cfg.env.DEFINES and 'dfp' in submodules:
-        print ('Removing submodule "dfp" due to lack of external')
-        submodules.remove('dfp')
 
     # Remove WCT packages if they an optional dependency wasn't found
     for pkg,ext in [
@@ -131,10 +136,13 @@ def configure(cfg):
     cfg.env.SUBDIRS = submodules
     print ('Configured for submodules: %s' % (', '.join(submodules), ))
     cfg.write_config_header('config.h')
-
+    #print(cfg.env)
 
 def build(bld):
     bld.load('smplpkgs')
+
+    print (bld.env)
+    print ('^^^ before recurse ^^^')
 
     subdirs = bld.env.SUBDIRS
     print ('Building: %s' % (', '.join(subdirs), ))

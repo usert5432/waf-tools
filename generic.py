@@ -59,7 +59,7 @@ def _configure(ctx, name, incs=(), libs=(), bins=(), pcname=None, mandatory=True
     incdir = getattr(ctx.options, 'with_%s_include'%lower, None)
     libdir = getattr(ctx.options, 'with_%s_lib'%lower, None)
     bindir = getattr(ctx.options, 'with_%s_bin'%lower, None)
-    #print ("CONFIGURE", name, inst,inc,lib, mandatory)
+    #print ("CONFIGURE", name, instdir, incdir, libdir, mandatory, extuses)
 
     if mandatory:
         if instdir:
@@ -80,9 +80,9 @@ def _configure(ctx, name, incs=(), libs=(), bins=(), pcname=None, mandatory=True
         ctx.check_cfg(package=pcname,  uselib_store=UPPER,
                       args=args, mandatory=mandatory)
         if 'HAVE_'+UPPER in ctx.env:
-            ctx.end_msg("found")
+            ctx.end_msg("located by pkg-config")
         else:
-            ctx.end_msg("failed")
+            ctx.end_msg("missing from pkg-config")
             return
     else:                       # do manual setting
 
@@ -110,19 +110,32 @@ def _configure(ctx, name, incs=(), libs=(), bins=(), pcname=None, mandatory=True
     if libs:
         ctx.start_msg("Location for %s libs" % (name,))
         for tryl in libs:
-            ctx.check_cxx(lib=tryl, define_name='HAVE_'+UPPER,
+            ctx.check_cxx(lib=tryl, define_name='HAVE_'+UPPER+'_LIB',
                           use=[UPPER] + extuses, uselib_store=UPPER, mandatory=mandatory)
         ctx.end_msg(str(getattr(ctx.env, 'LIBPATH_' + UPPER, None)))
 
         ctx.start_msg("Libs for %s" % UPPER)
-        ctx.end_msg(str(getattr(ctx.env, 'LIB_' + UPPER)))
+        have_libs = getattr(ctx.env, 'LIB_' + UPPER, None)
+        ctx.end_msg(str(have_libs))
+        if ctx.is_defined('HAVE_'+UPPER+'_LIB'):
+            ctx.env['HAVE_'+UPPER] = 1
+            print('HAVE %s libs' % UPPER)
+        else:
+            print('NO %s libs' % UPPER)
+            
 
     if incs:
         ctx.start_msg("Location for %s headers" % name)
         for tryh in incs:
-            ctx.check_cxx(header_name=tryh,
+            ctx.check_cxx(header_name=tryh, define_name='HAVE_'+UPPER+'_INC',
                           use=[UPPER] + extuses, uselib_store=UPPER, mandatory=mandatory)
-        ctx.end_msg(str(getattr(ctx.env, 'INCLUDES_' + UPPER, None)))
+        have_incs = getattr(ctx.env, 'INCLUDES_' + UPPER, None)
+        ctx.end_msg(str(have_incs))
+        if ctx.is_defined('HAVE_'+UPPER+'_INC'):
+            ctx.env['HAVE_'+UPPER] = 1
+            print('HAVE %s includes' % UPPER)
+        else:
+            print('NO %s includes' % UPPER)
 
     if bins:
         ctx.start_msg("Bins for %s" % name)

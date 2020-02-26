@@ -208,3 +208,17 @@ all functionality is bundled into ~wcb~ so the ~wscript~ is relatively
 empty.  Refer to WCT's:
 
 
+
+* Internals
+
+The ~wcb.py~ file holds what might otherwise be in a top-level ~wscript~
+file.  It's main thing is to list externals that can be handled in a
+generic way (see next para) and also doing any non-generic
+configuration.  It also enacts some dependency analysis to avoid
+building some sub-packages.
+
+The ~generic.py~ file provides a ~configure()~ method used to find most
+externals.  It results in defining ~HAVE_<name>_LIB~ and ~HAVE_<name>_INC~
+when libs or includes are successfully checked for a given package.
+These end up in ~config.h~ for use in C++ code.
+
