@@ -1,4 +1,4 @@
-import generic
+from . import generic
 
 from waflib import Task
 from waflib.TaskGen import extension
