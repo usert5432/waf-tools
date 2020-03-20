@@ -100,7 +100,7 @@ do
 done
 
 pushd "$wafdir" > /dev/null
-python waf-light --tools=$toolflags
+python3 waf-light --tools=$toolflags
 popd > /dev/null
 echo "built waf with tools: $toolflags"
 mv "$wafdir/waf" $output

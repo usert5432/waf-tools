@@ -8,27 +8,35 @@ from waflib.Utils import to_list
 mydir = osp.dirname(__file__)
 
 ## These are packages descriptions which fit the generic functions.
+## They will be checked in order so put any dependencies first.
 package_descriptions = [
-    ## These typically CAN be found by pkg-config
+
+    # spdlog is "header only" but use library version for faster recompilation
+    # wire-cell-util and ZIO both use this
+    # Need to build with -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+    ('spdlog',   dict(incs=['spdlog/spdlog.h'], libs=['spdlog'])),
+
     ('ZLib',     dict(incs=['zlib.h'], libs=['z'])),
     ('FFTW',     dict(incs=['fftw3.h'], libs=['fftw3f'], pcname='fftw3f')),
     ('FFTWThreads', dict(libs=['fftw3f_threads'], pcname='fftw3f', mandatory=False)),
     ('JsonCpp',  dict(incs=["json/json.h"], libs=['jsoncpp'])),
-    ## These can't always be found by pkg-config:
+
     ('Eigen',    dict(incs=["Eigen/Dense"], pcname='eigen3')),
-    ## These likely can NOT be found by pkg-config:
+
     ('Jsonnet',  dict(incs=["libjsonnet++.h"], libs=['jsonnet++','jsonnet'])),
     ('TBB',      dict(incs=["tbb/parallel_for.h"], libs=['tbb'], mandatory=False)),
     ('HDF5',     dict(incs=["hdf5.h"], libs=['hdf5'], mandatory=False)),
     ('H5CPP',    dict(incs=["h5cpp/all"], mandatory=False, extuses=('HDF5',))),
     ('LibTorch', dict(incs=["torch/script.h"], libs=['torch', 'c10'], mandatory=False)),
-    ### these are not yet used by wire-cell-toolkit/master
-    # ('ZMQ',      dict(incs=["zmq.h"], libs=['zmq'], pcname='libzmq', mandatory=False)),
-    # ('CZMQ',     dict(incs=["czmq.h"], libs=['czmq'], pcname='libczmq', mandatory=False)),
-    # ('ZYRE',     dict(incs=["zyre.h"], libs=['zyre'], mandatory=False)),
-    # ('ZIO',      dict(incs=["zio/node.hpp"], libs=['zio'], mandatory=False, extuses=("ZYRE","CZMQ","ZMQ"))),
 
-    # note, one may extend this list in the top "wscript"
+    ('ZMQ',      dict(incs=["zmq.h"], libs=['zmq'], pcname='libzmq', mandatory=False)),
+    ('CZMQ',     dict(incs=["czmq.h"], libs=['czmq'], pcname='libczmq', mandatory=False)),
+    ('ZYRE',     dict(incs=["zyre.h"], libs=['zyre'], pcname='libzyre', mandatory=False)),
+    ('ZIO',      dict(incs=["zio/node.hpp"], libs=['zio'], pcname='libzio', mandatory=False,
+                      extuses=("ZYRE","CZMQ","ZMQ"))),
+
+    # Note, this list may be modified (appended) in wscript files.
+    # The list here represents the minimum wire-cell-toolkit requires.
 ]
 
 
@@ -123,7 +131,7 @@ def configure(cfg):
             ("cuda","HAVE_CUDA"),
             ("hio", "INCLUDES_H5CPP"),
             ("pytorch", "LIB_LIBTORCH"),
-            #("zpb", "ZIO ZMQ CZMQ ZYRE PROTOBUF")
+            ("zio", "LIB_ZIO LIB_ZYRE LIB_CZMQ LIB_ZMQ")
     ]:
         exts = to_list(ext)
         for have in exts:
@@ -140,9 +148,6 @@ def configure(cfg):
 
 def build(bld):
     bld.load('smplpkgs')
-
-    print (bld.env)
-    print ('^^^ before recurse ^^^')
 
     subdirs = bld.env.SUBDIRS
     print ('Building: %s' % (', '.join(subdirs), ))
