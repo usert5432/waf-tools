@@ -114,6 +114,8 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
     test_scripts = bld.path.ant_glob('test/test_*.sh') + bld.path.ant_glob('test/test_*.py')
     test_jsonnets = bld.path.ant_glob('test/test*.jsonnet')
 
+    checksrc = bld.path.ant_glob('test/check_*.cxx')
+
     appsdir = bld.path.find_dir('apps')
 
     if incdir:
@@ -222,3 +224,16 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
                 ut_cwd   = bld.path, 
                 test_scripts_source = test_jsonnet,
                 test_scripts_template = "pwd && wcsonnet ${SCRIPT}")
+
+    if checksrc and not bld.options.no_tests:
+        for check_main in checksrc:
+            #print 'Building %s check: %s' % (name, check_main)
+            rpath = get_rpath(test_use + [name])
+            #print rpath
+            bld.program(source = [check_main], 
+                        target = check_main.name.replace('.cxx',''),
+                        install_path = None,
+                        #rpath = rpath,
+                        includes = ['inc','test','tests'],
+                        use = test_use + [name])
+            
