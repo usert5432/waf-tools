@@ -223,7 +223,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
             bld(features="test_scripts",
                 ut_cwd   = bld.path, 
                 test_scripts_source = test_jsonnet,
-                test_scripts_template = "pwd && wcsonnet ${SCRIPT}")
+                test_scripts_template = "pwd && ../build/apps/wcsonnet ${SCRIPT}")
 
     if checksrc and not bld.options.no_tests:
         for check_main in checksrc:
