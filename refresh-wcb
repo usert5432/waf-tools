@@ -9,6 +9,7 @@ wafdir="$(pwd)/waf"
 waftag="waf-2.0.19"
 
 
+
 toolsurl="https://github.com/WireCell/waf-tools.git"
 tooldir="$(pwd)"
 # initial defaults from waf
@@ -76,7 +77,8 @@ if [ ! -f "$tooldir/smplpkgs.py" ] ; then
     exit 1
 fi
 
-toolflags="compat15"
+#toolflags="compat15"
+toolflags=""
 for tool in $tools ;
 do
     maybe="$tooldir/${tool}.py"
@@ -100,8 +102,12 @@ do
 done
 
 pushd "$wafdir" > /dev/null
-python3 waf-light --tools=$toolflags
+#python waf-light --python=python2 --tools=$toolflags
+python3 ./waf-light configure build --tools=$toolflags
 popd > /dev/null
 echo "built waf with tools: $toolflags"
+echo 'WARNING: forcing python2.  See GitHub Issue #8'
+sed -i -e 's,/usr/bin/env python$,/usr/bin/env python2,' "$wafdir/waf"
 mv "$wafdir/waf" $output
+
 echo "$output"
