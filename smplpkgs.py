@@ -88,6 +88,7 @@ def build(bld):
 
 @conf
 def smplpkg(bld, name, use='', app_use='', test_use=''):
+
     if not hasattr(bld, 'smplpkg_graph'):
         #print ("Make SimpleGraph")
         bld.smplpkg_graph = SimpleGraph()
@@ -98,9 +99,11 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
         tst=set(to_list(test_use)))
 
     use = list(set(to_list(use)))
+    use.sort()
     app_use = list(set(use + to_list(app_use)))
+    app_use.sort()
     test_use = list(set(use + to_list(test_use)))
-
+    test_use.sort()
 
     includes = [bld.out_dir]
     headers = []
@@ -166,6 +169,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
                     #print pkgdir
                     ret.add(pkgdir)
         ret = list(ret)
+        ret.sort()
         return ret
 
     # the library
