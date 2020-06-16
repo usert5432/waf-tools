@@ -150,7 +150,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
             warn('No ROOT dictionary will be generated for "%s" unless "ROOTSYS" added to "use"' % name)
 
     if hasattr(bld.env, "PROTOC"):
-        pbs = bld.path.ant_glob('**/*.proto')
+        pbs = bld.path.ant_glob('src/**/*.proto')
         # if ("zpb" in name.lower()):
         #     print ("protobufs: %s" % (pbs,))
         source += pbs
