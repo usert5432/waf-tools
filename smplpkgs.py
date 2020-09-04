@@ -76,6 +76,7 @@ def configure(cfg):
     cfg.load('rpathify')
 
     cfg.env.append_unique('CXXFLAGS',['-std=c++17'])
+    cfg.env.append_unique('CXXFLAGS',['-fopenmp'])
 
     cfg.find_program('python', var='PYTHON', mandatory=True)
     cfg.find_program('bash', var='BASH', mandatory=True)
@@ -114,6 +115,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
     dictdir = bld.path.find_dir('dict')
 
     testsrc = bld.path.ant_glob('test/test_*.cxx')
+    testsrc_kokkos = bld.path.ant_glob('test/test_*.kokkos')
     test_scripts = bld.path.ant_glob('test/test_*.sh') + bld.path.ant_glob('test/test_*.py')
     test_jsonnets = bld.path.ant_glob('test/test*.jsonnet')
 
@@ -132,6 +134,7 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
     if srcdir:
         source += srcdir.ant_glob('*.cxx')
         source += srcdir.ant_glob('*.cu') # cuda
+        source += srcdir.ant_glob('*.kokkos') # kokkos
 
     # fixme: I should move this out of here.
     # root dictionary
@@ -199,6 +202,19 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
 
 
     if (testsrc or test_scripts) and not bld.options.no_tests:
+        for test_main in testsrc_kokkos:
+            print('bld: ', bld)
+            #print 'Building %s test: %s' % (name, test_main)
+            rpath = get_rpath(test_use + [name])
+            #print rpath
+            bld.program(features = 'test', 
+                        source = [test_main], 
+                        ut_cwd   = bld.path, 
+                        target = test_main.name.replace('.kokkos',''),
+                        install_path = None,
+                        #rpath = rpath,
+                        includes = ['inc','test','tests'],
+                        use = test_use + [name])
         for test_main in testsrc:
             #print 'Building %s test: %s' % (name, test_main)
             rpath = get_rpath(test_use + [name])
