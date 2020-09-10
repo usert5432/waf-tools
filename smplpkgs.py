@@ -203,11 +203,10 @@ def smplpkg(bld, name, use='', app_use='', test_use=''):
 
     if (testsrc or test_scripts) and not bld.options.no_tests:
         for test_main in testsrc_kokkos:
-            print('bld: ', bld)
             #print 'Building %s test: %s' % (name, test_main)
             rpath = get_rpath(test_use + [name])
             #print rpath
-            bld.program(features = 'test', 
+            bld.program(features = 'cxx test', 
                         source = [test_main], 
                         ut_cwd   = bld.path, 
                         target = test_main.name.replace('.kokkos',''),

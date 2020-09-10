@@ -8,8 +8,16 @@ from waflib.Configure import conf
 import os
 
 # from waf's playground
+class kokkos_gcc(Task.Task):
+    run_str = '${CXX} ${KOKKOS_CXXFLAGS} ${CXXFLAGS} ${FRAMEWORKPATH_ST:FRAMEWORKPATH} ${CPPPATH_ST:INCPATHS} ${DEFINES_ST:DEFINES} ${CXX_SRC_F}${SRC} ${CXX_TGT_F} ${TGT}'
+    color   = 'GREEN'
+    ext_in  = ['.h']
+    vars    = ['CCDEPS']
+    scan    = c_preproc.scan
+    shell   = False
+
 class kokkos_cuda(Task.Task):
-    run_str = '${NVCC} ${NVCCFLAGS} ${FRAMEWORKPATH_ST:FRAMEWORKPATH} ${CPPPATH_ST:INCPATHS} ${DEFINES_ST:DEFINES} ${CXX_SRC_F}${SRC} ${CXX_TGT_F} ${TGT}'
+    run_str = '${NVCC} ${KOKKOS_NVCCFLAGS} ${NVCCFLAGS} ${FRAMEWORKPATH_ST:FRAMEWORKPATH} ${CPPPATH_ST:INCPATHS} ${DEFINES_ST:DEFINES} ${CXX_SRC_F}${SRC} ${CXX_TGT_F} ${TGT}'
     color   = 'GREEN'
     ext_in  = ['.h']
     vars    = ['CCDEPS']
@@ -20,10 +28,11 @@ class kokkos_cuda(Task.Task):
 def kokkos_hook(self, node):
     options = getattr(self.env, 'KOKKOS_OPTIONS', None)
     if 'cuda' in options:
-        print('use nvcc on ', node)
+        # print('use nvcc on ', node)
         return self.create_compiled_task('kokkos_cuda', node)
     else:
-        return self.create_compiled_task('cxx', node)
+        # print('use gcc on ', node)
+        return self.create_compiled_task('kokkos_gcc', node)
 
 def options(opt):
     generic._options(opt, "KOKKOS")
@@ -44,5 +53,8 @@ def configure(cfg):
     # nvccflags += "--std=c++11 "
     nvccflags += "-Xcudafe --diag_suppress=esa_on_defaulted_function_ignored -expt-extended-lambda -arch=sm_75 -Xcompiler -fopenmp "
     nvccflags += os.environ.get("NVCCFLAGS","")
-    cfg.env.NVCCFLAGS += nvccflags.strip().split()
-    print ("KOKKOS: NVCCFLAGS = %s" % (' '.join(cfg.env.NVCCFLAGS)))
+    cfg.env.KOKKOS_NVCCFLAGS += nvccflags.strip().split()
+    cxxflags = " -x c++ "
+    cfg.env.KOKKOS_CXXFLAGS += cxxflags.strip().split()
+    print ("KOKKOS_NVCCFLAGS = %s" % (' '.join(cfg.env.KOKKOS_NVCCFLAGS)))
+    print ("KOKKOS_CXXFLAGS = %s" % (' '.join(cfg.env.KOKKOS_CXXFLAGS)))
