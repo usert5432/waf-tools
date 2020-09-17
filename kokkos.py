@@ -45,7 +45,8 @@ def configure(cfg):
     options = getattr(cfg.options, 'kokkos_options', None)
     setattr(cfg.env, 'KOKKOS_OPTIONS', options)
     options = getattr(cfg.env, 'KOKKOS_OPTIONS', None)
-    print('KOKKOS_OPTIONS                           :', options)
+    cfg.start_msg("KOKKOS_OPTIONS:")
+    cfg.end_msg(str(options))
 
     if not 'HAVE_KOKKOS' in cfg.env:
         return
@@ -56,5 +57,7 @@ def configure(cfg):
     cfg.env.KOKKOS_NVCCFLAGS += nvccflags.strip().split()
     cxxflags = " -x c++ "
     cfg.env.KOKKOS_CXXFLAGS += cxxflags.strip().split()
-    print ("KOKKOS_NVCCFLAGS = %s" % (' '.join(cfg.env.KOKKOS_NVCCFLAGS)))
-    print ("KOKKOS_CXXFLAGS = %s" % (' '.join(cfg.env.KOKKOS_CXXFLAGS)))
+    cfg.start_msg("KOKKOS_NVCCFLAGS:")
+    cfg.end_msg(str(cfg.env.KOKKOS_NVCCFLAGS))
+    cfg.start_msg("KOKKOS_CXXFLAGS:")
+    cfg.end_msg(str(cfg.env.KOKKOS_CXXFLAGS))
