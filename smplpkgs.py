@@ -76,7 +76,6 @@ def configure(cfg):
     cfg.load('rpathify')
 
     cfg.env.append_unique('CXXFLAGS',['-std=c++17'])
-    cfg.env.append_unique('CXXFLAGS',['-fopenmp'])
 
     cfg.find_program('python', var='PYTHON', mandatory=True)
     cfg.find_program('bash', var='BASH', mandatory=True)
