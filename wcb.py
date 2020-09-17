@@ -47,6 +47,7 @@ def options(opt):
     opt.load('smplpkgs')
     opt.load('rootsys')
     opt.load('cuda')
+    opt.load('kokkos')
     #opt.load('protobuf')
 
     for name,desc in package_descriptions:
@@ -78,6 +79,11 @@ def configure(cfg):
         print ("sans CUDA")
     else:
         cfg.load('cuda')
+
+    if getattr(cfg.options, "with_kokkos", False) is False:
+        print ("sans KOKKOS")
+    else:
+        cfg.load('kokkos')
 
     if getattr(cfg.options, "with_root", False) is False:
         print ("sans ROOT")
