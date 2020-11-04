@@ -14,26 +14,26 @@ package_descriptions = [
     # spdlog is "header only" but use library version for faster recompilation
     # wire-cell-util and ZIO both use this
     # Need to build with -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-    ('spdlog',   dict(incs=['spdlog/spdlog.h'], libs=['spdlog'])),
+    #('spdlog',   dict(incs=['spdlog/spdlog.h'], libs=['spdlog'])),
 
-    ('ZLib',     dict(incs=['zlib.h'], libs=['z'])),
-    ('FFTW',     dict(incs=['fftw3.h'], libs=['fftw3f'], pcname='fftw3f')),
-    ('FFTWThreads', dict(libs=['fftw3f_threads'], pcname='fftw3f', mandatory=False)),
-    ('JsonCpp',  dict(incs=["json/json.h"], libs=['jsoncpp'])),
+    #('ZLib',     dict(incs=['zlib.h'], libs=['z'])),
+    #('FFTW',     dict(incs=['fftw3.h'], libs=['fftw3f'], pcname='fftw3f')),
+    #('FFTWThreads', dict(libs=['fftw3f_threads'], pcname='fftw3f', mandatory=False)),
+    #('JsonCpp',  dict(incs=["json/json.h"], libs=['jsoncpp'])),
 
-    ('Eigen',    dict(incs=["Eigen/Dense"], pcname='eigen3')),
+    #('Eigen',    dict(incs=["Eigen/Dense"], pcname='eigen3')),
 
-    ('Jsonnet',  dict(incs=["libjsonnet++.h"], libs=['jsonnet++','jsonnet'])),
-    ('TBB',      dict(incs=["tbb/parallel_for.h"], libs=['tbb'], mandatory=False)),
-    ('HDF5',     dict(incs=["hdf5.h"], libs=['hdf5'], mandatory=False)),
-    ('H5CPP',    dict(incs=["h5cpp/all"], mandatory=False, extuses=('HDF5',))),
-    ('LibTorch', dict(incs=["torch/script.h"], libs=['torch', 'c10'], mandatory=False)),
+    #('Jsonnet',  dict(incs=["libjsonnet++.h"], libs=['jsonnet++','jsonnet'])),
+    #('TBB',      dict(incs=["tbb/parallel_for.h"], libs=['tbb'], mandatory=False)),
+    #('HDF5',     dict(incs=["hdf5.h"], libs=['hdf5'], mandatory=False)),
+    #('H5CPP',    dict(incs=["h5cpp/all"], mandatory=False, extuses=('HDF5',))),
+    #('LibTorch', dict(incs=["torch/script.h"], libs=['torch', 'c10'], mandatory=False)),
 
-    ('ZMQ',      dict(incs=["zmq.h"], libs=['zmq'], pcname='libzmq', mandatory=False)),
-    ('CZMQ',     dict(incs=["czmq.h"], libs=['czmq'], pcname='libczmq', mandatory=False)),
-    ('ZYRE',     dict(incs=["zyre.h"], libs=['zyre'], pcname='libzyre', mandatory=False)),
-    ('ZIO',      dict(incs=["zio/node.hpp"], libs=['zio'], pcname='libzio', mandatory=False,
-                      extuses=("ZYRE","CZMQ","ZMQ"))),
+    #('ZMQ',      dict(incs=["zmq.h"], libs=['zmq'], pcname='libzmq', mandatory=False)),
+    #('CZMQ',     dict(incs=["czmq.h"], libs=['czmq'], pcname='libczmq', mandatory=False)),
+    #('ZYRE',     dict(incs=["zyre.h"], libs=['zyre'], pcname='libzyre', mandatory=False)),
+    #('ZIO',      dict(incs=["zio/node.hpp"], libs=['zio'], pcname='libzio', mandatory=False,
+    #                  extuses=("ZYRE","CZMQ","ZMQ"))),
 
     # Note, this list may be modified (appended) in wscript files.
     # The list here represents the minimum wire-cell-toolkit requires.
@@ -107,8 +107,8 @@ def configure(cfg):
 
     # Check for stuff not found in the wcb-generic way
 
-    cfg.check_boost(lib='system filesystem graph thread program_options iostreams regex')
-    haveit('boost')
+    #cfg.check_boost(lib='system filesystem graph thread program_options iostreams regex')
+    #haveit('boost')
 
     cfg.check(header_name="dlfcn.h", uselib_store='DYNAMO',
               lib=['dl'], mandatory=True)
