@@ -34,6 +34,16 @@ package_descriptions = [
     #('ZYRE',     dict(incs=["zyre.h"], libs=['zyre'], pcname='libzyre', mandatory=False)),
     #('ZIO',      dict(incs=["zio/node.hpp"], libs=['zio'], pcname='libzio', mandatory=False,
     #                  extuses=("ZYRE","CZMQ","ZMQ"))),
+    (
+        'VLNEVAL',
+         dict(
+             incs      = [ "vlneval/struct/VarDict.h" ],
+             libs      = [ "vlneval" ],
+             pcname    = 'vlneval',
+             mandatory = False,
+             # extuses   = [ "TENSORFLOW", "BOOST" ]
+         )
+    ),
 
     # Note, this list may be modified (appended) in wscript files.
     # The list here represents the minimum wire-cell-toolkit requires.
